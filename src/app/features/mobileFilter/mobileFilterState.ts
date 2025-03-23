@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { RootState } from "./store";
+import { RootState } from "../../store/store";
 
 // Create a slice
 export const mobileFilterVisibleSlice = createSlice({

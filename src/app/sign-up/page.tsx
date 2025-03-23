@@ -1,24 +1,16 @@
 "use client";
 import axios from "axios";
+import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-
-type FormValues = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  phoneNumber: string;
-  otp: string;
-  country: string;
-  division: string;
-  district: string;
-  fullAddress: string;
-};
+import { toast } from "react-toastify";
+import { useSignUpMutation } from "../api/apiSlice";
+import { District, Division, FormValues } from "../types/types";
 
 const SignUpForm = () => {
+  const [signUp, { error: submitError, isSuccess, data }] = useSignUpMutation();
   const {
     register,
     handleSubmit,
@@ -33,100 +25,92 @@ const SignUpForm = () => {
       password: "",
       confirmPassword: "",
       phoneNumber: "",
-      otp: "",
-      country: "",
-      division: "",
-      district: "",
-      fullAddress: "",
+      address: [
+        {
+          country: "Bangladesh",
+          division: "",
+          district: "",
+          isDefault: false,
+          fullAddress: "",
+        },
+      ],
     },
   });
 
-  interface Division {
-    id: number;
-    name: string;
-  }
-  interface District {
-    id: number;
-    name: string;
-  }
   const [countries] = useState<string[]>(["Bangladesh"]);
   const [divisions, setDivisions] = useState<Division[]>([]);
   const [districts, setDistricts] = useState<District[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  console.log("districts", districts);
+  console.log("divisions", divisions);
 
+  const [isVisible, setIsVisible] = useState({
+    isPasswordVisible: false,
+    isConfirmPasswordVisible: false,
+  });
+
+  const togglePasswordVisibility = () =>
+    setIsVisible((prev) => ({
+      ...prev,
+      isPasswordVisible: !prev.isPasswordVisible,
+    }));
+  const toggleConfirmPasswordVisibility = () =>
+    setIsVisible((prev) => ({
+      ...prev,
+      isConfirmPasswordVisible: !prev.isConfirmPasswordVisible,
+    }));
+  const router = useRouter();
+  const country = watch("address.0.country");
+  console.log(country);
   const getDivisions = async () => {
-    if (!watch("country")) return;
     setIsLoading(true);
     try {
       const res = await axios.get("https://bdapi.editboxpro.com/api/divisions");
       const data = await res.data;
       setDivisions([...data]);
-      console.log("divisions", data);
     } catch (error) {
       console.error("Error fetching divisions:", error);
     } finally {
       setIsLoading(false);
     }
   };
+  useEffect(() => {
+    getDivisions();
+  }, []);
   const getDistricts = async () => {
-    if (!watch("division")) return;
+    if (!watch("address.0.division")) return;
     setIsLoading(true);
     try {
       const res = await axios.get(
-        `https://bdapi.editboxpro.com/api/districts/${watch("division")}`
+        `https://bdapi.editboxpro.com/api/districts/${watch(
+          "address.0.division"
+        )}`
       );
       const data = await res.data;
       setDistricts([...data]);
-      console.log("districts", data);
     } catch (error) {
       console.error("Error fetching districts:", error);
     } finally {
       setIsLoading(false);
     }
   };
-
-  //   const divisionsByCountry: Record<string, string[]> = {
-  //     Bangladesh: ["Dhaka", "Chittagong", "Khulna"],
-  //     "United States": ["California", "New York", "Texas", "Florida"],
-  //     Canada: ["Ontario", "Quebec", "British Columbia"],
-  //     "United Kingdom": ["England", "Scotland", "Wales"],
-  //     Australia: ["New South Wales", "Victoria", "Queensland"],
-  //     India: ["Maharashtra", "Karnataka", "Tamil Nadu"],
-  //   };
-
-  //   const districtsByDivision: Record<string, string[]> = {
-  //     California: ["Los Angeles", "San Francisco", "San Diego"],
-  //     "New York": ["Manhattan", "Brooklyn", "Queens"],
-  //     Texas: ["Houston", "Austin", "Dallas"],
-  //     Ontario: ["Toronto", "Ottawa", "Hamilton"],
-  //     Queensland: ["Brisbane", "Gold Coast", "Sunshine Coast"],
-  //     Maharashtra: ["Mumbai", "Pune", "Nagpur"],
-  //   };
-
-  //   const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-  //     const country = e.target.value;
-  //     setDivisions(divisionsByCountry[country] || []);
-  //     setDistricts([]);
-  //   };
-
-  //   const handleDivisionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-  //     const division = e.target.value;
-  //     setDistricts(districtsByDivision[division] || []);
-  //   };
-
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
-    setIsLoading(true);
-    setTimeout(() => {
-      console.log("Form submitted:", data);
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+    try {
+      setIsLoading(true);
+      await signUp(data);
+      toast.success("Form submitted successfully!");
+      router.push(`/confirm-otp?email=${encodeURIComponent(data.email)}`);
       setIsLoading(false);
-    }, 2000);
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      toast.error("Failed to submit form");
+    }
   };
 
   const password = watch("password");
-
   return (
     <section className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md h-full mb-14 md:mb-0 lg:mb-0">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center underline">
         Create Your Account
       </h2>
 
@@ -205,6 +189,7 @@ const SignUpForm = () => {
             <input
               type="email"
               id="email"
+              autoComplete="email"
               placeholder="johndoe@example.com"
               {...register("email", { required: "Email is required" })}
               className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-200 dark:bg-gray-800 dark:text-white"
@@ -228,6 +213,7 @@ const SignUpForm = () => {
               type="tel"
               id="phoneNumber"
               placeholder="123-456-7890"
+              autoComplete="tel"
               {...register("phoneNumber", {
                 required: "Phone Number is required",
               })}
@@ -255,19 +241,22 @@ const SignUpForm = () => {
             </label>
             <select
               id="country"
-              {...register("country", { required: "Country is required" })}
+              onClick={getDivisions}
+              {...register("address.0.country", {
+                required: "Country is required",
+              })}
               className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-200 dark:bg-gray-800 dark:text-white"
             >
               <option value="">Select Country</option>
               {countries.map((country) => (
-                <option key={country} value={country} onClick={getDivisions}>
+                <option key={country} value={country}>
                   {country}
                 </option>
               ))}
             </select>
-            {errors.country && (
+            {errors.address?.[0]?.country && (
               <p className="text-red-500 text-sm mt-1">
-                {errors.country.message}
+                {errors.address?.[0]?.country?.message}
               </p>
             )}
           </div>
@@ -282,20 +271,23 @@ const SignUpForm = () => {
             </label>
             <select
               id="division"
-              {...register("division", { required: "Division is required" })}
+              onClick={getDistricts}
+              {...register("address.0.division", {
+                required: "Division is required",
+              })}
               className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-200 dark:bg-gray-800 dark:text-white"
             >
               <option value="">Select Division</option>
               {isLoading && <option value="">Loading...</option>}
               {divisions?.map(({ id, name }) => (
-                <option key={id} value={name} onClick={getDistricts}>
+                <option key={id} value={name}>
                   {name}
                 </option>
               ))}
             </select>
-            {errors.division && (
+            {errors.address?.[0]?.division && (
               <p className="text-red-500 text-sm mt-1">
-                {errors.division.message}
+                {errors.address?.[0]?.division?.message}
               </p>
             )}
           </div>
@@ -310,7 +302,9 @@ const SignUpForm = () => {
             </label>
             <select
               id="district"
-              {...register("district", { required: "District is required" })}
+              {...register("address.0.district", {
+                required: "District is required",
+              })}
               className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-200 dark:bg-gray-800 dark:text-white"
             >
               <option value="">Select District</option>
@@ -321,9 +315,9 @@ const SignUpForm = () => {
                 </option>
               ))}
             </select>
-            {errors.district && (
+            {errors.address?.[0]?.district && (
               <p className="text-red-500 text-sm mt-1">
-                {errors.district.message}
+                {errors.address?.[0]?.district?.message}
               </p>
             )}
           </div>
@@ -340,14 +334,15 @@ const SignUpForm = () => {
               id="fullAddress"
               rows={4}
               placeholder="Enter your full address"
-              {...register("fullAddress", {
-                required: "Full Address is required",
+              {...register("address.0.fullAddress", {
+                required: "Address is required",
               })}
+              autoComplete="address"
               className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-200 dark:bg-gray-800 dark:text-white"
             />
-            {errors.fullAddress && (
+            {errors.address && (
               <p className="text-red-500 text-sm mt-1">
-                {errors.fullAddress.message}
+                {errors.address.message}
               </p>
             )}
           </div>
@@ -365,19 +360,33 @@ const SignUpForm = () => {
             >
               Password <span className="text-red-500">*</span>
             </label>
-            <input
-              type="password"
-              id="password"
-              placeholder="Enter your password"
-              {...register("password", {
-                required: "Password is required",
-                minLength: {
-                  value: 6,
-                  message: "Password must be at least 6 characters",
-                },
-              })}
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-200 dark:bg-gray-800 dark:text-white"
-            />
+            <div className="relative">
+              <input
+                type={isVisible.isPasswordVisible ? "text" : "password"}
+                id="password"
+                autoComplete="new-password"
+                placeholder="Enter your password"
+                {...register("password", {
+                  required: "Password is required",
+                  minLength: {
+                    value: 6,
+                    message: "Password must be at least 6 characters",
+                  },
+                })}
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-200 dark:bg-gray-800 dark:text-white"
+              />
+              <button
+                type="button"
+                onClick={togglePasswordVisibility}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
+              >
+                {isVisible.isPasswordVisible ? (
+                  <EyeOff size={18} />
+                ) : (
+                  <Eye size={18} />
+                )}
+              </button>
+            </div>
             {errors.password && (
               <p className="text-red-500 text-sm mt-1">
                 {errors.password.message}
@@ -393,39 +402,36 @@ const SignUpForm = () => {
             >
               Confirm Password <span className="text-red-500">*</span>
             </label>
-            <input
-              type="password"
-              id="confirmPassword"
-              placeholder="Confirm your password"
-              {...register("confirmPassword", {
-                required: "Confirm Password is required",
-                validate: (value) =>
-                  value === password || "The passwords do not match",
-              })}
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-200 dark:bg-gray-800 dark:text-white"
-            />
+            <div className="relative">
+              <input
+                type={isVisible.isConfirmPasswordVisible ? "text" : "password"}
+                id="confirmPassword"
+                autoComplete="new-password"
+                placeholder="Confirm your password"
+                {...register("confirmPassword", {
+                  required: "Confirm Password is required",
+                  validate: (value) =>
+                    value === password || "The passwords do not match",
+                })}
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-200 dark:bg-gray-800 dark:text-white"
+              />
+              <button
+                type="button"
+                onClick={toggleConfirmPasswordVisibility}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
+              >
+                {isVisible.isConfirmPasswordVisible ? (
+                  <EyeOff size={18} />
+                ) : (
+                  <Eye size={18} />
+                )}
+              </button>
+            </div>
             {errors.confirmPassword && (
               <p className="text-red-500 text-sm mt-1">
                 {errors.confirmPassword.message}
               </p>
             )}
-          </div>
-
-          {/* OTP */}
-          <div>
-            <label
-              htmlFor="otp"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              OTP
-            </label>
-            <input
-              type="text"
-              id="otp"
-              placeholder="Enter OTP"
-              {...register("otp")}
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-200 dark:bg-gray-800 dark:text-white"
-            />
           </div>
         </div>
 
@@ -435,8 +441,19 @@ const SignUpForm = () => {
             type="submit"
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-md transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white"
           >
-            {isLoading ? "Loading..." : "Register"}
+            <div className="flex items-center justify-center gap-2">
+              {isLoading && <span className="loader"></span>}
+              <span>{isLoading ? "Loading..." : "Sign Up"}</span>
+            </div>
           </button>
+          {submitError && (
+            <p className="text-red-500 text-sm mt-1">
+              {(submitError as Error).message}
+            </p>
+          )}
+          {isSuccess && (
+            <p className="text-green-500 text-sm mt-1">{data.message}</p>
+          )}
         </div>
         <p className="text-sm text-gray-600 mt-4 mb- ">
           Already have an account ?{" "}

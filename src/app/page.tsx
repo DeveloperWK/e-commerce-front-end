@@ -1,10 +1,14 @@
 "use client";
+import { useGetProductsQuery } from "./api/apiSlice";
 import FilterSidebar from "./components/FilterSidebar";
 import ProductCard from "./components/ProductCard";
 import Slider from "./components/Slider";
 import WithNavbarLayout from "./with-navbar";
 
 const Home = () => {
+  const { data: products, isLoading, error } = useGetProductsQuery({});
+  console.log(products?.products, isLoading, error);
+
   return (
     <main>
       <WithNavbarLayout>

@@ -1,5 +1,5 @@
 "use client";
-import { toggleMobileFilterVisible } from "@/app/store/mobileFilterState";
+import { toggleMobileFilterVisible } from "@/app/features/mobileFilter/mobileFilterState";
 import { Filter, Home, Search, ShoppingCart, User } from "lucide-react";
 import Link from "next/link";
 import { useDispatch } from "react-redux";
