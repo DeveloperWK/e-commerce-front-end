@@ -1,28 +1,49 @@
 "use client";
+import { SignInFormValues } from "@/app/types/types";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-
-type FormValues = {
-  email: string;
-  password: string;
-};
+import { toast } from "react-toastify";
+import { useSignInMutation } from "../api/apiSlice";
+import { useAuth } from "../hooks/useAuth";
 
 const SignInForm = () => {
+  const [signIn, { isLoading, error, isError, data, isSuccess }] =
+    useSignInMutation();
+  const { signIn: signInAuth } = useAuth();
+
+  const router = useRouter();
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormValues>();
+  } = useForm<SignInFormValues>();
 
-  const onSubmit = (data: FormValues) => {
-    console.log(data);
-    // Add your login logic here (e.g., API call)
+  const onSubmit = async (data: SignInFormValues) => {
+    try {
+      await signIn(data);
+    } catch (error) {
+      console.error("Error signing in:", error);
+      toast.error("Failed to sign in");
+    }
   };
 
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success("Login successful");
+      signInAuth(data.token, data.role);
+      router.push("/");
+    }
+    if (isError) {
+      toast.error("Failed to sign in");
+    }
+  }, [data, router, signInAuth, isError, isSuccess]);
+
   return (
-    <section className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">
+    <section className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
+      <div className="w-full max-w-md p-8 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+        <h1 className="text-2xl font-bold text-center text-gray-800 dark:text-white mb-6">
           Sign In
         </h1>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -30,7 +51,7 @@ const SignInForm = () => {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
             >
               Email
             </label>
@@ -41,7 +62,7 @@ const SignInForm = () => {
               {...register("email", {
                 required: "Email is required",
               })}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-800 dark:text-white"
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             />
             {errors.email && (
               <p className="text-red-500 text-sm mt-1">
@@ -54,7 +75,7 @@ const SignInForm = () => {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
             >
               Password
             </label>
@@ -69,7 +90,7 @@ const SignInForm = () => {
                   message: "Password must be at least 6 characters",
                 },
               })}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-800 dark:text-white"
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             />
             {errors.password && (
               <p className="text-red-500 text-sm mt-1">
@@ -81,20 +102,35 @@ const SignInForm = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+            disabled={isLoading}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white"
           >
-            Sign In
+            <div className="flex items-center justify-center gap-2">
+              {isLoading && <span className="loader"></span>}
+              <span>{isLoading ? "Loading..." : "Sign In"}</span>
+            </div>
           </button>
 
           {/* Sign Up Link */}
           <div className="text-center">
-            <p className="text-sm text-gray-600">
-              Don&apos;t have an account ?{" "}
-              <Link href="/sign-up" className="text-blue-500 hover:underline">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Don&apos;t have an account?{" "}
+              <Link
+                href="/sign-up"
+                className="text-blue-600 hover:underline dark:text-blue-400"
+              >
                 Sign Up
               </Link>
             </p>
           </div>
+          {isError && error && typeof error === "object" && "data" in error && (
+            <p className="text-red-500 text-sm mt-1">
+              {(error as { data: { message: string } }).data.message}
+            </p>
+          )}
+          {isSuccess && data && (
+            <p className="text-green-500 text-sm mt-1">{data?.message}</p>
+          )}
         </form>
       </div>
     </section>

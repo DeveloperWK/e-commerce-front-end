@@ -1,14 +1,10 @@
 "use client";
-import { useGetProductsQuery } from "./api/apiSlice";
-import FilterSidebar from "./components/FilterSidebar";
-import ProductCard from "./components/ProductCard";
-import Slider from "./components/Slider";
-import WithNavbarLayout from "./with-navbar";
+import FilterSidebar from "@/app/components/FilterSidebar";
+import ProductsGrid from "@/app/components/productsGrid";
+import Slider from "@/app/components/Slider";
+import WithNavbarLayout from "@/app/with-navbar";
 
 const Home = () => {
-  const { data: products, isLoading, error } = useGetProductsQuery({});
-  console.log(products?.products, isLoading, error);
-
   return (
     <main>
       <WithNavbarLayout>
@@ -19,16 +15,7 @@ const Home = () => {
           <section className="w-64 sticky top-4 h-fit">
             <FilterSidebar />
           </section>
-          <section className=" w-full py-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4   place-items-center">
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
-          </section>
+          <ProductsGrid />
         </section>
       </WithNavbarLayout>
     </main>

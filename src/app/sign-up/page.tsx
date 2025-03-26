@@ -1,4 +1,6 @@
 "use client";
+import { useSignUpMutation } from "@/app/api/apiSlice";
+import { District, Division, SignUpFormValues } from "@/app/types/types";
 import axios from "axios";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
@@ -6,8 +8,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import { useSignUpMutation } from "../api/apiSlice";
-import { District, Division, FormValues } from "../types/types";
 
 const SignUpForm = () => {
   const [signUp, { error: submitError, isSuccess, data }] = useSignUpMutation();
@@ -16,7 +16,7 @@ const SignUpForm = () => {
     handleSubmit,
     formState: { errors },
     watch,
-  } = useForm<FormValues>({
+  } = useForm<SignUpFormValues>({
     mode: "onBlur",
     defaultValues: {
       firstName: "",
@@ -36,14 +36,10 @@ const SignUpForm = () => {
       ],
     },
   });
-
   const [countries] = useState<string[]>(["Bangladesh"]);
   const [divisions, setDivisions] = useState<Division[]>([]);
   const [districts, setDistricts] = useState<District[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  console.log("districts", districts);
-  console.log("divisions", divisions);
-
   const [isVisible, setIsVisible] = useState({
     isPasswordVisible: false,
     isConfirmPasswordVisible: false,
@@ -54,14 +50,15 @@ const SignUpForm = () => {
       ...prev,
       isPasswordVisible: !prev.isPasswordVisible,
     }));
+
   const toggleConfirmPasswordVisibility = () =>
     setIsVisible((prev) => ({
       ...prev,
       isConfirmPasswordVisible: !prev.isConfirmPasswordVisible,
     }));
+
   const router = useRouter();
-  const country = watch("address.0.country");
-  console.log(country);
+
   const getDivisions = async () => {
     setIsLoading(true);
     try {
@@ -74,9 +71,11 @@ const SignUpForm = () => {
       setIsLoading(false);
     }
   };
+
   useEffect(() => {
     getDivisions();
   }, []);
+
   const getDistricts = async () => {
     if (!watch("address.0.division")) return;
     setIsLoading(true);
@@ -94,7 +93,8 @@ const SignUpForm = () => {
       setIsLoading(false);
     }
   };
-  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+
+  const onSubmit: SubmitHandler<SignUpFormValues> = async (data) => {
     try {
       setIsLoading(true);
       await signUp(data);
@@ -108,25 +108,24 @@ const SignUpForm = () => {
   };
 
   const password = watch("password");
+
   return (
-    <section className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md h-full mb-14 md:mb-0 lg:mb-0">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center underline">
+    <section className="max-w-2xl mx-auto p-6 bg-white dark:bg-gray-900 rounded-lg shadow-md h-full mb-14 md:mb-0 lg:mb-0">
+      <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6 text-center underline">
         Create Your Account
       </h2>
-
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Personal Information Section */}
-        <div className="bg-gray-50 p-4 rounded-md">
-          <h3 className="text-lg font-medium text-gray-700 mb-4">
+        <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-md">
+          <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-4">
             Personal Information
           </h3>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* First Name */}
             <div>
               <label
                 htmlFor="firstName"
-                className="block text-sm font-medium text-gray-700 mb-1"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
               >
                 First Name <span className="text-red-500">*</span>
               </label>
@@ -137,7 +136,7 @@ const SignUpForm = () => {
                 {...register("firstName", {
                   required: "First Name is required",
                 })}
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-200 dark:bg-gray-800 dark:text-white"
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-blue-200"
               />
               {errors.firstName && (
                 <p className="text-red-500 text-sm mt-1">
@@ -145,12 +144,11 @@ const SignUpForm = () => {
                 </p>
               )}
             </div>
-
             {/* Last Name */}
             <div>
               <label
                 htmlFor="lastName"
-                className="block text-sm font-medium text-gray-700 mb-1"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
               >
                 Last Name <span className="text-red-500">*</span>
               </label>
@@ -161,7 +159,7 @@ const SignUpForm = () => {
                 {...register("lastName", {
                   required: "Last Name is required",
                 })}
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-200 dark:bg-gray-800 dark:text-white"
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-blue-200"
               />
               {errors.lastName && (
                 <p className="text-red-500 text-sm mt-1">
@@ -173,16 +171,15 @@ const SignUpForm = () => {
         </div>
 
         {/* Contact Information Section */}
-        <div className="bg-gray-50 p-4 rounded-md">
-          <h3 className="text-lg font-medium text-gray-700 mb-4">
+        <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-md">
+          <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-4">
             Contact Information
           </h3>
-
           {/* Email */}
           <div className="mb-4">
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
             >
               Email Address <span className="text-red-500">*</span>
             </label>
@@ -192,7 +189,7 @@ const SignUpForm = () => {
               autoComplete="email"
               placeholder="johndoe@example.com"
               {...register("email", { required: "Email is required" })}
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-200 dark:bg-gray-800 dark:text-white"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-blue-200"
             />
             {errors.email && (
               <p className="text-red-500 text-sm mt-1">
@@ -200,12 +197,11 @@ const SignUpForm = () => {
               </p>
             )}
           </div>
-
           {/* Phone Number */}
           <div className="mb-4">
             <label
               htmlFor="phoneNumber"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
             >
               Phone Number <span className="text-red-500">*</span>
             </label>
@@ -217,7 +213,7 @@ const SignUpForm = () => {
               {...register("phoneNumber", {
                 required: "Phone Number is required",
               })}
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-200 dark:bg-gray-800 dark:text-white"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-blue-200"
             />
             {errors.phoneNumber && (
               <p className="text-red-500 text-sm mt-1">
@@ -228,14 +224,15 @@ const SignUpForm = () => {
         </div>
 
         {/* Address Section */}
-        <div className="bg-gray-50 p-4 rounded-md">
-          <h3 className="text-lg font-medium text-gray-700 mb-4">Address</h3>
-
+        <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-md">
+          <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-4">
+            Address
+          </h3>
           {/* Country */}
           <div className="mb-4">
             <label
               htmlFor="country"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
             >
               Country <span className="text-red-500">*</span>
             </label>
@@ -245,7 +242,7 @@ const SignUpForm = () => {
               {...register("address.0.country", {
                 required: "Country is required",
               })}
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-200 dark:bg-gray-800 dark:text-white"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-blue-200"
             >
               <option value="">Select Country</option>
               {countries.map((country) => (
@@ -260,12 +257,11 @@ const SignUpForm = () => {
               </p>
             )}
           </div>
-
           {/* Division */}
           <div className="mb-4">
             <label
               htmlFor="division"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
             >
               Division <span className="text-red-500">*</span>
             </label>
@@ -275,7 +271,7 @@ const SignUpForm = () => {
               {...register("address.0.division", {
                 required: "Division is required",
               })}
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-200 dark:bg-gray-800 dark:text-white"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-blue-200"
             >
               <option value="">Select Division</option>
               {isLoading && <option value="">Loading...</option>}
@@ -291,12 +287,11 @@ const SignUpForm = () => {
               </p>
             )}
           </div>
-
           {/* District */}
           <div className="mb-4">
             <label
               htmlFor="district"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
             >
               District <span className="text-red-500">*</span>
             </label>
@@ -305,7 +300,7 @@ const SignUpForm = () => {
               {...register("address.0.district", {
                 required: "District is required",
               })}
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-200 dark:bg-gray-800 dark:text-white"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-blue-200"
             >
               <option value="">Select District</option>
               {isLoading && <option value="">Loading...</option>}
@@ -321,12 +316,11 @@ const SignUpForm = () => {
               </p>
             )}
           </div>
-
           {/* Full Address */}
           <div>
             <label
               htmlFor="fullAddress"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
             >
               Full Address <span className="text-red-500">*</span>
             </label>
@@ -338,7 +332,7 @@ const SignUpForm = () => {
                 required: "Address is required",
               })}
               autoComplete="address"
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-200 dark:bg-gray-800 dark:text-white"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-blue-200"
             />
             {errors.address && (
               <p className="text-red-500 text-sm mt-1">
@@ -349,14 +343,15 @@ const SignUpForm = () => {
         </div>
 
         {/* Security Section */}
-        <div className="bg-gray-50 p-4 rounded-md">
-          <h3 className="text-lg font-medium text-gray-700 mb-4">Security</h3>
-
+        <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-md">
+          <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-4">
+            Security
+          </h3>
           {/* Password */}
           <div className="mb-4">
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
             >
               Password <span className="text-red-500">*</span>
             </label>
@@ -373,12 +368,12 @@ const SignUpForm = () => {
                     message: "Password must be at least 6 characters",
                   },
                 })}
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-200 dark:bg-gray-800 dark:text-white"
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-blue-200"
               />
               <button
                 type="button"
                 onClick={togglePasswordVisibility}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 text-gray-500 dark:text-gray-400"
               >
                 {isVisible.isPasswordVisible ? (
                   <EyeOff size={18} />
@@ -393,12 +388,11 @@ const SignUpForm = () => {
               </p>
             )}
           </div>
-
           {/* Confirm Password */}
           <div className="mb-4">
             <label
               htmlFor="confirmPassword"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
             >
               Confirm Password <span className="text-red-500">*</span>
             </label>
@@ -413,12 +407,12 @@ const SignUpForm = () => {
                   validate: (value) =>
                     value === password || "The passwords do not match",
                 })}
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 border-gray-300 focus:ring-blue-200 dark:bg-gray-800 dark:text-white"
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-blue-200"
               />
               <button
                 type="button"
                 onClick={toggleConfirmPasswordVisibility}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 text-gray-500 dark:text-gray-400"
               >
                 {isVisible.isConfirmPasswordVisible ? (
                   <EyeOff size={18} />
@@ -455,9 +449,12 @@ const SignUpForm = () => {
             <p className="text-green-500 text-sm mt-1">{data.message}</p>
           )}
         </div>
-        <p className="text-sm text-gray-600 mt-4 mb- ">
+        <p className="text-sm text-gray-600 dark:text-gray-400 mt-4 mb- ">
           Already have an account ?{" "}
-          <Link href="/sign-in" className="text-blue-600 hover:underline">
+          <Link
+            href="/sign-in"
+            className="text-blue-600 hover:underline dark:text-blue-400"
+          >
             Sign In
           </Link>
         </p>

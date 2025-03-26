@@ -1,5 +1,6 @@
 import Image from "next/image";
-const ProductCard = () => {
+import { Product } from "../types/types";
+const ProductCard = ({ product }: { product: Product }) => {
   return (
     <section className="w-50 h-[20rem] md:w-[15.625rem]  md:h-[18.75rem] bg-white  md:hover:shadow-lg md:hover:scale-105 transition-all dark:hover:shadow-lg dark:hover:scale-105 px-4 text-black py-4 border border-gray-300">
       <Image
@@ -9,9 +10,9 @@ const ProductCard = () => {
         alt="product"
         className="w-100"
       />
-      <p className="text-[1.2rem]">Product Name</p>
+      <p className="text-[1.2rem]">{product?.title}</p>
       <section className="flex items-center gap-2 ">
-        <p className="text-blue-400 text-[1.2rem]">৳50</p>
+        <p className="text-blue-400 text-[1.2rem]">৳{product?.price}</p>
         <p className="text-gray-400"> -50% </p>
       </section>
       <section>

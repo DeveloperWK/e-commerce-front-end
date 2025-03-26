@@ -1,5 +1,11 @@
+import {
+  CategoryFormInputs,
+  ProductFormInputs,
+  SignInFormValues,
+  SignUpFormValues,
+} from "@/app/types/types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { FormValues } from "../types/types";
+import { getLocalStorage } from "../utility/storageUtils";
 export const apiSlice = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
@@ -10,7 +16,7 @@ export const apiSlice = createApi({
       query: () => "/products",
     }),
     signUp: builder.mutation({
-      query: (data: FormValues) => ({
+      query: (data: SignUpFormValues) => ({
         url: "/auth/register",
         method: "POST",
         body: data,
@@ -30,6 +36,45 @@ export const apiSlice = createApi({
         body: data,
       }),
     }),
+    signIn: builder.mutation({
+      query: (data: SignInFormValues) => ({
+        url: "/auth/login",
+        method: "POST",
+        body: data,
+      }),
+    }),
+    search: builder.query({
+      query: (q: string) => ({
+        url: "/products/search",
+        method: "GET",
+        params: { q },
+      }),
+    }),
+    createCategory: builder.mutation({
+      query: (data: CategoryFormInputs) => ({
+        url: "/categories",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getLocalStorage("token")}`,
+        },
+        method: "POST",
+        body: data,
+      }),
+    }),
+    getCategories: builder.query({
+      query: () => "/categories",
+    }),
+    createProduct: builder.mutation({
+      query: (data: ProductFormInputs) => ({
+        url: "/products",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getLocalStorage("token")}`,
+        },
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -38,5 +83,9 @@ export const {
   useSignUpMutation,
   useOtpVerifyMutation,
   useResendOtpMutation,
+  useSignInMutation,
+  useLazySearchQuery,
+  useCreateCategoryMutation,
+  useCreateProductMutation,
+  useGetCategoriesQuery,
 } = apiSlice;
-console.log(process.env._NEXT_PUBLIC_API_BASE_URL);

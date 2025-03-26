@@ -6,15 +6,15 @@ const DesktopNav = ({
   searchQuery,
   setSearchQuery,
   cartCount,
-  toggleSignIn,
   isLoggedIn,
+  signOut,
 }: {
   handleSearch: (e: React.FormEvent) => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   cartCount: number;
-  toggleSignIn: () => void;
   isLoggedIn: boolean;
+  signOut: () => void;
 }) => {
   return (
     <nav>
@@ -62,7 +62,7 @@ const DesktopNav = ({
                 placeholder="Search products..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="py-1 pl-3 pr-10 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="py-1 pl-3 pr-10 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:border-gray-700 dark:focus:ring-gray-700 dark:focus:border-gray-700 dark:text-gray-300 dark:bg-gray-800"
               />
               <button
                 type="submit"
@@ -95,20 +95,20 @@ const DesktopNav = ({
             {/* Sign In/Out */}
             {isLoggedIn ? (
               <button
-                onClick={toggleSignIn}
+                onClick={signOut}
                 className="flex items-center space-x-1 text-sm font-medium text-gray-700 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md px-3 py-2"
               >
                 <LogOut size={16} />
                 <span>Sign Out</span>
               </button>
             ) : (
-              <button
-                onClick={toggleSignIn}
+              <Link
+                href="/sign-in"
                 className="flex items-center space-x-1 text-sm font-medium text-gray-700 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md px-3 py-2"
               >
                 <User size={16} />
                 <span>Sign In</span>
-              </button>
+              </Link>
             )}
           </div>
         </div>

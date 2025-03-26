@@ -1,6 +1,6 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { useOtpVerifyMutation, useResendOtpMutation } from "../api/apiSlice";
 
@@ -31,7 +31,7 @@ const OTPPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const enteredOtp = otp.join("");
-    console.log("OTP Entered:", enteredOtp);
+
     if (!email) {
       toast.error("Email is required");
       return;
@@ -154,4 +154,12 @@ const OTPPage = () => {
   );
 };
 
-export default OTPPage;
+const OtpPageWithSuspense = () => {
+  return (
+    <Suspense fallback={<p>Loading...</p>}>
+      <OTPPage />
+    </Suspense>
+  );
+};
+
+export default OtpPageWithSuspense;
