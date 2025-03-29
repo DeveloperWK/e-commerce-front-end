@@ -1,5 +1,5 @@
 "use client";
-import { useLazyGetProductsQuery } from "@/app/api/apiSlice";
+import { useGetProductsQuery } from "@/app/api/apiSlice";
 import ProductCard from "@/app/components/ProductCard";
 import { RootState } from "@/app/store/store";
 import { Product } from "@/app/types/types";
@@ -17,20 +17,32 @@ const ProductsGrid = () => {
   const searchResults = useSelector(
     (state: RootState) => state.searchResults.searchResults
   );
-  const [getProducts, { data: productsData, isLoading }] =
-    useLazyGetProductsQuery();
+  // const [getProducts, { data: productsData, isLoading }] =
+  //   useLazyGetProductsQuery();
+  const { data: productsData, isLoading } = useGetProductsQuery({
+    page: currentPage.toString(),
+  });
 
   const totalPages = productsData?.totalPages || 1;
   const hasSearched = useSelector(
     (state: RootState) => state.hasSearched.hasSearched
   );
 
-  useEffect(() => {
-    if (!hasSearched) {
-      getProducts({ page: currentPage.toString() });
-    }
-  }, [currentPage, getProducts, hasSearched]);
-
+  // useEffect(() => {
+  //   getProducts({ page: currentPage.toString() });
+  // }, [currentPage, getProducts, hasSearched]);
+  // useEffect(() => {
+  //   const fetchProducts = async () => {
+  //     try {
+  //       await getProducts({
+  //         page: currentPage.toString(),
+  //       });
+  //     } catch (error) {
+  //       console.error("Error fetching products:", error);
+  //     }
+  //   };
+  //   fetchProducts();
+  // }, [currentPage, hasSearched]);
   useEffect(() => {
     if (hasSearched) {
       setProducts(searchResults || []);

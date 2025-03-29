@@ -6,10 +6,15 @@ import {
 import { CategoryFormInputs, ProductFormInputs } from "@/app/types/types";
 import React from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 
 const CreateProductForm: React.FC = () => {
-  const [createProduct, { isLoading }] = useCreateProductMutation();
+  const [createProduct, { isLoading, isSuccess }] = useCreateProductMutation();
+  // const { refetch } = useGetProductsQuery({});
+  // const [getProducts] = useLazyGetProductsQuery();
   const { data: categories } = useGetCategoriesQuery({});
+  console.log("Categories:", categories);
+
   const {
     register,
     handleSubmit,
@@ -47,9 +52,13 @@ const CreateProductForm: React.FC = () => {
 
   const onSubmit = (data: ProductFormInputs) => {
     createProduct(data);
+    // refetch();
     console.log("Product Data:", data);
   };
-
+  if (isSuccess) {
+    toast.success("Product created successfully");
+    // getProducts({ page: "1" });
+  }
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}

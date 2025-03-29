@@ -1,5 +1,8 @@
 "use client";
-import { useCreateCategoryMutation } from "@/app/api/apiSlice";
+import {
+  useCreateCategoryMutation,
+  useGetCategoriesQuery,
+} from "@/app/api/apiSlice";
 import { CategoryFormInputs } from "@/app/types/types";
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -18,10 +21,12 @@ const CreateCategoryForm: React.FC = () => {
     formState: { errors },
   } = useForm<CategoryFormInputs>();
   const [createCategory, { isLoading }] = useCreateCategoryMutation();
+  const { refetch } = useGetCategoriesQuery({});
   // Handle form submission
   const onSubmit = (data: CategoryFormInputs) => {
     console.log("Category Data:", data);
     createCategory(data);
+    refetch();
     // Send the data to your backend API here
   };
 

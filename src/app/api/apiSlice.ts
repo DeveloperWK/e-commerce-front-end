@@ -19,13 +19,17 @@ export const apiSlice = createApi({
         category,
         limit,
       }: {
-        page: string;
+        page?: string;
         category?: string;
         limit?: string;
       }) => ({
         url: "/products",
         params: { page, category, limit },
       }),
+      transformErrorResponse: (error) => {
+        return error;
+      },
+
       providesTags: ["products"],
     }),
     signUp: builder.mutation({
@@ -63,6 +67,11 @@ export const apiSlice = createApi({
         params: { q },
       }),
     }),
+
+    getCategories: builder.query({
+      query: () => "/categories",
+      providesTags: ["categories"],
+    }),
     createCategory: builder.mutation({
       query: (data: CategoryFormInputs) => ({
         url: "/categories",
@@ -73,9 +82,7 @@ export const apiSlice = createApi({
         method: "POST",
         body: data,
       }),
-    }),
-    getCategories: builder.query({
-      query: () => "/categories",
+      invalidatesTags: ["categories"],
     }),
     createProduct: builder.mutation({
       query: (data: ProductFormInputs) => ({

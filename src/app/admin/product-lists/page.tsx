@@ -1,7 +1,6 @@
 "use client";
-import { useLazyGetProductsQuery } from "@/app/api/apiSlice";
+import { useGetProductsQuery } from "@/app/api/apiSlice";
 import ProductTable from "@/app/components/ProductTable";
-import { Product } from "@/app/types/types";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
@@ -14,18 +13,16 @@ const ProductsPage = () => {
   const initialLimit = searchParams.get("limit") || "8";
   const [limit, setLimit] = useState(initialLimit);
   const [currentPage, setCurrentPage] = useState(initialPage);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [getProducts, { data: productsData, isLoading }] =
-    useLazyGetProductsQuery();
+  // const [products, setProducts] = useState<Product[]>([]);
+  const { data: productsData, isLoading } = useGetProductsQuery({
+    page: initialPage.toString(),
+    limit: initialLimit,
+  });
   const totalPages = productsData?.totalPages || 1;
 
-  useEffect(() => {
-    getProducts({ page: currentPage.toString(), limit });
-  }, [currentPage, getProducts, limit]);
-
-  useEffect(() => {
-    setProducts(productsData?.products || []);
-  }, [productsData]);
+  // useEffect(() => {
+  //   setProducts(productsData?.products || []);
+  // }, [productsData]);
 
   useEffect(() => {
     if (isLoading) {
@@ -81,7 +78,7 @@ const ProductsPage = () => {
         </section>
       </div>
 
-      <ProductTable products={products} />
+      <ProductTable products={productsData?.products || []} />
       {/* <ProductForm
         show={showForm}
         onClose={() => setShowForm(false)}

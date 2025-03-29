@@ -5,10 +5,8 @@ const ProductTable = ({ products }: { products: Product[] }) => {
   return (
     <section className="bg-white dark:bg-gray-800 rounded-lg shadow">
       <div className="overflow-x-auto p-1">
-        {" "}
         {/* Added subtle padding */}
         <table className="w-full divide-y divide-gray-200 dark:divide-gray-700 min-w-[600px]">
-          {" "}
           {/* Minimum width */}
           <thead className="bg-gray-50 dark:bg-gray-900">
             <tr>
@@ -26,6 +24,12 @@ const ProductTable = ({ products }: { products: Product[] }) => {
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider whitespace-nowrap">
                 Stock
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider whitespace-nowrap">
+                Category
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider whitespace-nowrap">
+                Status
               </th>
               <th className="px-4 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider text-center">
                 Action
@@ -54,6 +58,12 @@ const ProductTable = ({ products }: { products: Product[] }) => {
                 </td>
                 <td className="px-4 py-4 text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">
                   {product.stock}
+                </td>
+                <td className="px-4 py-4 text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                  {product.category?.name}
+                </td>
+                <td className="px-4 py-4 text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                  {product.status}
                 </td>
                 <td className="px-4 py-4 whitespace-nowrap text-center">
                   {/* Action buttons */}

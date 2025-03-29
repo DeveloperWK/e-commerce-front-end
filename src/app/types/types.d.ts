@@ -35,7 +35,10 @@ type Product = {
   price: number;
   salePrice: number;
   stock: number;
-  category: string;
+  category: {
+    _id: string;
+    name: string;
+  };
   images: string[];
   slug: string;
   attributes: { name: string; value: string }[];
