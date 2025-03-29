@@ -11,9 +11,22 @@ export const apiSlice = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL as string,
   }),
+  tagTypes: ["products", "categories"],
   endpoints: (builder) => ({
     getProducts: builder.query({
-      query: () => "/products",
+      query: ({
+        page,
+        category,
+        limit,
+      }: {
+        page: string;
+        category?: string;
+        limit?: string;
+      }) => ({
+        url: "/products",
+        params: { page, category, limit },
+      }),
+      providesTags: ["products"],
     }),
     signUp: builder.mutation({
       query: (data: SignUpFormValues) => ({
@@ -74,6 +87,7 @@ export const apiSlice = createApi({
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ["products"],
     }),
   }),
 });
@@ -88,4 +102,5 @@ export const {
   useCreateCategoryMutation,
   useCreateProductMutation,
   useGetCategoriesQuery,
+  useLazyGetProductsQuery,
 } = apiSlice;

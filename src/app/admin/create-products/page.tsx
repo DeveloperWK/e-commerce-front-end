@@ -18,6 +18,7 @@ const CreateProductForm: React.FC = () => {
   } = useForm<ProductFormInputs>({
     defaultValues: {
       stock: 0,
+      category: "",
       status: "draft",
       images: [],
       attributes: [],
@@ -100,6 +101,22 @@ const CreateProductForm: React.FC = () => {
         {errors.sku && (
           <p className="text-red-500 dark:text-red-400 text-xs mt-1">
             {errors.sku.message}
+          </p>
+        )}
+      </div>
+      {/* Slug */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          Slug <span className="text-red-500">*</span>
+        </label>
+        <input
+          type="text"
+          {...register("slug", { required: "Slug is required" })}
+          className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        />
+        {errors.slug && (
+          <p className="text-red-500 dark:text-red-400 text-xs mt-1">
+            {errors.slug.message}
           </p>
         )}
       </div>

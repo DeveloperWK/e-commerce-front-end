@@ -1,14 +1,13 @@
-import Navbar from "./components/NavBar";
+import EmailSignupPopover from "@/app/components/EmailSignupPopover";
+import Navbar from "@/app/components/NavBar";
 
-export default function WithNavbarLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+function WithNavbarLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Navbar />
       {children}
+      <EmailSignupPopover />
     </>
   );
 }
+export default WithNavbarLayout;

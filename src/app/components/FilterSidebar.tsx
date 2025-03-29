@@ -1,12 +1,14 @@
 "use client";
+import { useGetCategoriesQuery } from "@/app/api/apiSlice";
+import { RootState, useAppSelector } from "@/app/store/store";
+import { CategoryFormInputs } from "@/app/types/types";
 import React, { useState } from "react";
-import { RootState, useAppSelector } from "../store/store";
 
 const FilterSidebar: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [minPrice, setMinPrice] = useState<number>(0);
   const [maxPrice, setMaxPrice] = useState<number>(1000);
-  const categories = ["Electronics", "Clothing", "Books", "Home & Kitchen"];
+  const { data: categories } = useGetCategoriesQuery({});
   const onFilterChange = (filters: {
     category: string;
     minPrice: number;
@@ -45,18 +47,18 @@ const FilterSidebar: React.FC = () => {
       <div className="mb-6">
         <h3 className="text-md font-medium mb-2">Category</h3>
         <ul className="space-y-2">
-          {categories.map((category) => (
-            <li key={category}>
+          {categories?.categories?.map((category: CategoryFormInputs) => (
+            <li key={category._id}>
               <label className="flex items-center">
                 <input
                   type="radio"
                   name="category"
-                  value={category}
-                  checked={selectedCategory === category}
-                  onChange={() => handleCategoryChange(category)}
+                  value={category._id}
+                  checked={selectedCategory === category._id}
+                  onChange={() => handleCategoryChange(category._id)}
                   className="form-radio h-4 w-4 text-indigo-600 transition duration-150 ease-in-out"
                 />
-                <span className="ml-2">{category}</span>
+                <span className="ml-2">{category.name}</span>
               </label>
             </li>
           ))}

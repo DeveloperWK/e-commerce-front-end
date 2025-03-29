@@ -98,15 +98,16 @@ const SignUpForm = () => {
     try {
       setIsLoading(true);
       await signUp(data);
-      toast.success("Form submitted successfully!");
-      router.push(`/confirm-otp?email=${encodeURIComponent(data.email)}`);
       setIsLoading(false);
     } catch (error) {
       console.error("Error submitting form:", error);
       toast.error("Failed to submit form");
     }
   };
-
+  if (isSuccess) {
+    toast.success("Form submitted successfully!");
+    router.push(`/confirm-otp?email=${encodeURIComponent(data.email)}`);
+  }
   const password = watch("password");
 
   return (
@@ -244,7 +245,9 @@ const SignUpForm = () => {
               })}
               className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-blue-200"
             >
-              <option value="">Select Country</option>
+              <option value="" disabled>
+                Select Country
+              </option>
               {countries.map((country) => (
                 <option key={country} value={country}>
                   {country}
@@ -273,7 +276,9 @@ const SignUpForm = () => {
               })}
               className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-blue-200"
             >
-              <option value="">Select Division</option>
+              <option value="" disabled>
+                Select Division
+              </option>
               {isLoading && <option value="">Loading...</option>}
               {divisions?.map(({ id, name }) => (
                 <option key={id} value={name}>
@@ -302,7 +307,9 @@ const SignUpForm = () => {
               })}
               className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-blue-200"
             >
-              <option value="">Select District</option>
+              <option value="" disabled>
+                Select District
+              </option>
               {isLoading && <option value="">Loading...</option>}
               {districts?.map(({ id, name }) => (
                 <option key={id} value={name}>

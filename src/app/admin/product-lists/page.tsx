@@ -1,43 +1,31 @@
 "use client";
 import { useLazyGetProductsQuery } from "@/app/api/apiSlice";
-import ProductCard from "@/app/components/ProductCard";
-import { RootState } from "@/app/store/store";
+import ProductTable from "@/app/components/ProductTable";
 import { Product } from "@/app/types/types";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { Suspense, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-const ProductsGrid = () => {
+const ProductsPage = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const initialPage = parseInt(searchParams.get("page") || "1", 10);
+  const initialLimit = searchParams.get("limit") || "8";
+  const [limit, setLimit] = useState(initialLimit);
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [products, setProducts] = useState<Product[]>([]);
-  const searchResults = useSelector(
-    (state: RootState) => state.searchResults.searchResults
-  );
   const [getProducts, { data: productsData, isLoading }] =
     useLazyGetProductsQuery();
-
   const totalPages = productsData?.totalPages || 1;
-  const hasSearched = useSelector(
-    (state: RootState) => state.hasSearched.hasSearched
-  );
 
   useEffect(() => {
-    if (!hasSearched) {
-      getProducts({ page: currentPage.toString() });
-    }
-  }, [currentPage, getProducts, hasSearched]);
+    getProducts({ page: currentPage.toString(), limit });
+  }, [currentPage, getProducts, limit]);
 
   useEffect(() => {
-    if (hasSearched) {
-      setProducts(searchResults || []);
-    } else {
-      setProducts(productsData?.products || []);
-    }
-  }, [hasSearched, searchResults, productsData]);
+    setProducts(productsData?.products || []);
+  }, [productsData]);
 
   useEffect(() => {
     if (isLoading) {
@@ -47,43 +35,58 @@ const ProductsGrid = () => {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    updateQueryParams(page);
+    updateQueryParams(page, limit);
   };
-
-  const updateQueryParams = (page: number) => {
+  const handleLimitChange = (newLimit: string) => {
+    setLimit(newLimit);
+    setCurrentPage(1);
+    updateQueryParams(1, newLimit);
+  };
+  const updateQueryParams = (page: number, limit?: string) => {
     if (page < 1 || isNaN(page)) return;
 
     const newParams = new URLSearchParams(searchParams.toString());
     newParams.set("page", page.toString());
-    router.push(`?${newParams.toString()}`);
+    newParams.set("limit", limit!);
+    router.push(`?${newParams.toString()} `);
   };
 
-  const activeProducts = products?.filter(
-    (product) => product.status === "active"
-  );
+  if (isLoading) return <div className="p-4">Loading...</div>;
 
   return (
-    <section>
-      <section className="w-full py-4 grid grid-cols-2  md:grid-cols-3 lg:grid-cols-4 gap-4 place-items-center">
-        {isLoading && (
-          <div className="w-full flex justify-center items-center h-64">
-            <p>Loading...</p>
-          </div>
-        )}
-        {activeProducts?.map((product: Product) => (
-          <ProductCard key={product._id} product={product} />
-        ))}
+    <div className="p-4">
+      <div className="flex justify-between items-center mb-4 ">
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
+          Products
+        </h1>
+        <section className="flex items-center space-x-2">
+          <Link
+            href="/admin/create-products"
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            Add Product
+          </Link>
+          <select
+            name="limit"
+            id="limit"
+            value={limit}
+            onChange={(e) => handleLimitChange(e.target.value)}
+            className="px-3 py-2 border rounded-md focus:outline-none focus:ring-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-blue-200"
+          >
+            <option value="10">10</option>
+            <option value="20">20</option>
+            {/* <option value="50">50</option>
+            <option value="100">100</option> */}
+          </select>
+        </section>
+      </div>
 
-        {activeProducts?.length === 0 && (
-          <p className="text-center text-gray-500">
-            {hasSearched
-              ? "No products found. Try adjusting your search."
-              : "No products available."}
-          </p>
-        )}
-      </section>
-
-      {/* Pagination controls */}
+      <ProductTable products={products} />
+      {/* <ProductForm
+        show={showForm}
+        onClose={() => setShowForm(false)}
+        onSave={handleSave}
+      /> */}
       <section className="w-full flex flex-wrap justify-center mt-4 space-x-2">
         {totalPages > 1 && (
           <div className="w-full flex flex-wrap justify-center mt-4 space-x-2">
@@ -132,8 +135,14 @@ const ProductsGrid = () => {
           </div>
         )}
       </section>
-    </section>
+    </div>
   );
 };
-
-export default ProductsGrid;
+const ProductLists = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ProductsPage />
+    </Suspense>
+  );
+};
+export default ProductLists;

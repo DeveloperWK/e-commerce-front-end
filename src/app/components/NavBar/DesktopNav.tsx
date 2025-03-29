@@ -1,6 +1,7 @@
-import { LogOut, Search, ShoppingCart, User } from "lucide-react";
+import { LogOut, Search, ShoppingCart, Store, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 const DesktopNav = ({
   handleSearch,
   searchQuery,
@@ -16,6 +17,8 @@ const DesktopNav = ({
   isLoggedIn: boolean;
   signOut: () => void;
 }) => {
+  const path = usePathname();
+  const shopPage = path === "/shop";
   return (
     <nav>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -56,34 +59,31 @@ const DesktopNav = ({
             </div> */}
 
             {/* Search Form */}
-            <form onSubmit={handleSearch} className="relative">
-              <input
-                type="text"
-                placeholder="Search products..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="py-1 pl-3 pr-10 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:border-gray-700 dark:focus:ring-gray-700 dark:focus:border-gray-700 dark:text-gray-300 dark:bg-gray-800"
-              />
-              <button
-                type="submit"
-                className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-blue-600"
-              >
-                <Search size={16} />
-              </button>
-            </form>
-
-            {/* Cart */}
+            {shopPage && (
+              <form onSubmit={handleSearch} className="relative">
+                <input
+                  type="text"
+                  placeholder="Search products..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="py-1 pl-3 pr-10 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:border-gray-700 dark:focus:ring-gray-700 dark:focus:border-gray-700 dark:text-gray-300 dark:bg-gray-800"
+                />
+                <button
+                  type="submit"
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-blue-600"
+                >
+                  <Search size={16} />
+                </button>
+              </form>
+            )}
             <Link
-              href="/cart"
-              className="relative p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              href="/shop"
+              className="flex items-center space-x-1 text-sm font-medium text-gray-700 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md px-3 py-2"
             >
-              <ShoppingCart size={20} className="text-gray-600" />
-              {cartCount > 0 && (
-                <span className="absolute top-0 right-0 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-red-500 rounded-full">
-                  {cartCount}
-                </span>
-              )}
+              <Store size={20} className="text-gray-600" />
+              <span>Store</span>
             </Link>
+
             {/* Sign-Up */}
             <Link
               href="/sign-up"
@@ -110,6 +110,18 @@ const DesktopNav = ({
                 <span>Sign In</span>
               </Link>
             )}
+            {/* Cart */}
+            <Link
+              href="/cart"
+              className="relative p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <ShoppingCart size={20} className="text-gray-600" />
+              {cartCount > 0 && (
+                <span className="absolute top-0 right-0 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-red-500 rounded-full">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
           </div>
         </div>
       </div>

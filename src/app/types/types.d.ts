@@ -72,9 +72,25 @@ type CategoryFormInputs = {
   description?: string; // Optional
   parent?: string; // Optional (for nested categories)
 };
+type Category = {
+  id: string;
+  name: string;
+  imageUrl: string;
+  productCount: number;
+  isTrending?: boolean;
+};
+
+type CategoryTrendingProps = {
+  categories: Category[];
+  title?: string;
+  subtitle?: string;
+  columns?: number;
+};
+
 export type {
   Address,
   CategoryFormInputs,
+  CategoryTrendingProps,
   District,
   Division,
   Product,
