@@ -5,11 +5,44 @@ import { mobileFilterVisibleReducer } from "@/app/features/mobileFilter/mobileFi
 import { searchResultsReducer } from "@/app/features/searchResults/searchResults";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
-import { persistReducer, persistStore } from "redux-persist";
+import {
+  FLUSH,
+  PAUSE,
+  PERSIST,
+  persistReducer,
+  persistStore,
+  PURGE,
+  REGISTER,
+  REHYDRATE,
+} from "redux-persist";
 import storage from "redux-persist/lib/storage";
+type ApiState = ReturnType<typeof apiSlice.reducer> & {
+  [apiSlice.reducerPath]?: Omit<
+    ApiState,
+    "queries" | "mutations" | "provided" | "subscriptions"
+  >;
+};
+const rtkQueryTransform = {
+  in: (state: ApiState) => state,
+  out: (state: ApiState) => {
+    return {
+      ...state,
+      [apiSlice.reducerPath]: {
+        ...state[apiSlice.reducerPath],
+        queries: {},
+        mutations: {},
+        provided: {},
+        subscriptions: {},
+      },
+    };
+  },
+};
 const persistConfig = {
   key: "root",
   storage,
+  whitelist: ["mobileFilterVisible", "auth", "hasSearched"],
+  blacklist: [apiSlice.reducerPath],
+  transforms: [rtkQueryTransform],
 };
 const rootReducer = combineReducers({
   mobileFilterVisible: mobileFilterVisibleReducer,
@@ -25,7 +58,7 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) => {
     return getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: ["persist/PERSIST", "persist/REGISTER"],
+        ignoredActions: [FLUSH, PAUSE, PERSIST, REHYDRATE, REGISTER, PURGE],
       },
     }).concat(apiSlice.middleware);
   },

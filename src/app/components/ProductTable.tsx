@@ -1,7 +1,26 @@
 "use client";
+import {
+  useDeleteProductMutation,
+  useGetProductsQuery,
+} from "@/app/api/apiSlice";
 import { Product } from "@/app/types/types";
+import ActionButtons from "./ActionButtons";
 
 const ProductTable = ({ products }: { products: Product[] }) => {
+  const [deleteProduct] = useDeleteProductMutation();
+  const { refetch } = useGetProductsQuery({
+    page: "1",
+    limit: "8",
+  });
+
+  const deleteHandler = async (id: string) => {
+    try {
+      await deleteProduct(id);
+      refetch();
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <section className="bg-white dark:bg-gray-800 rounded-lg shadow">
       <div className="overflow-x-auto p-1">
@@ -67,6 +86,7 @@ const ProductTable = ({ products }: { products: Product[] }) => {
                 </td>
                 <td className="px-4 py-4 whitespace-nowrap text-center">
                   {/* Action buttons */}
+                  <ActionButtons onDelete={() => deleteHandler(product._id)} />
                 </td>
               </tr>
             ))}

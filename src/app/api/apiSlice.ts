@@ -1,6 +1,7 @@
 import {
   CategoryFormInputs,
   ProductFormInputs,
+  ProductList,
   SignInFormValues,
   SignUpFormValues,
 } from "@/app/types/types";
@@ -10,27 +11,58 @@ export const apiSlice = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL as string,
+    cache: "no-store",
+
+    prepareHeaders: (headers) => {
+      const token = getLocalStorage("token");
+      if (token) {
+        headers.set("Authorization", `Bearer ${token}`);
+      }
+      return headers;
+    },
   }),
-  tagTypes: ["products", "categories"],
+  tagTypes: ["Product", "Category"],
+  keepUnusedDataFor: 30,
+  refetchOnMountOrArgChange: true,
   endpoints: (builder) => ({
     getProducts: builder.query({
       query: ({
         page,
         category,
         limit,
+        min,
+        max,
       }: {
         page?: string;
         category?: string;
         limit?: string;
+        min?: string;
+        max?: string;
       }) => ({
         url: "/products",
-        params: { page, category, limit },
+        params: { page, category, limit, min, max },
       }),
-      transformErrorResponse: (error) => {
-        return error;
-      },
 
-      providesTags: ["products"],
+      transformResponse: (response: ProductList) => response || [],
+
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.products.map(({ _id }: { _id: string }) => ({
+                type: "Product" as const,
+                id: _id,
+              })),
+              { type: "Product" as const, id: "LIST" },
+            ]
+          : [{ type: "Product" as const, id: "LIST" }],
+
+      // providesTags: ["Product"],
+    }),
+    products: builder.query({
+      query: () => ({
+        url: "/products",
+      }),
+      providesTags: [{ type: "Product", id: "LIST" }],
     }),
     signUp: builder.mutation({
       query: (data: SignUpFormValues) => ({
@@ -67,10 +99,9 @@ export const apiSlice = createApi({
         params: { q },
       }),
     }),
-
     getCategories: builder.query({
       query: () => "/categories",
-      providesTags: ["categories"],
+      providesTags: [{ type: "Category", id: "LIST" }],
     }),
     createCategory: builder.mutation({
       query: (data: CategoryFormInputs) => ({
@@ -82,7 +113,7 @@ export const apiSlice = createApi({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["categories"],
+      invalidatesTags: [{ type: "Category", id: "LIST" }],
     }),
     createProduct: builder.mutation({
       query: (data: ProductFormInputs) => ({
@@ -94,7 +125,17 @@ export const apiSlice = createApi({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["products"],
+      invalidatesTags: [{ type: "Product", id: "LIST" }],
+    }),
+    deleteProduct: builder.mutation({
+      query: (id: string) => ({
+        url: `/products/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result, error, id) => [
+        { type: "Product", id },
+        { type: "Product", id: "LIST" },
+      ],
     }),
   }),
 });
@@ -110,4 +151,6 @@ export const {
   useCreateProductMutation,
   useGetCategoriesQuery,
   useLazyGetProductsQuery,
+  useDeleteProductMutation,
+  useProductsQuery,
 } = apiSlice;

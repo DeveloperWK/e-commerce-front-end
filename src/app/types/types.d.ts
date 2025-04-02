@@ -46,6 +46,12 @@ type Product = {
   tags: string[];
   variants: { name: string; value: string }[];
 };
+type ProductList = {
+  products: Product[];
+  totalPages: number;
+  totalProducts: number;
+  currentPage: number;
+};
 type User = {
   isAuthenticated: boolean;
   role?: string;
@@ -89,15 +95,25 @@ type CategoryTrendingProps = {
   subtitle?: string;
   columns?: number;
 };
-
+type FilterSidebarProps = {
+  handleCategoryChange: (category: string) => void;
+  handlePriceChange: () => void;
+  selectedCategory: string;
+  min: number;
+  max: number;
+  setMin: (min: number) => void;
+  setMax: (max: number) => void;
+};
 export type {
   Address,
   CategoryFormInputs,
   CategoryTrendingProps,
   District,
   Division,
+  FilterSidebarProps,
   Product,
   ProductFormInputs,
+  ProductList,
   SearchState,
   SignInFormValues,
   SignUpFormValues,
