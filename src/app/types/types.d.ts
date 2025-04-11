@@ -71,9 +71,10 @@ type ProductFormInputs = {
   images: string[];
   slug?: string;
   attributes: { name: string; value: string }[];
-  status: "active" | "inactive" | "draft";
+  status: "active" | "inactive" | "draft" | "";
   tags: string[];
   variants: { name: string; value: string }[];
+  _id: string;
 };
 type CategoryFormInputs = {
   _id: string;
@@ -104,18 +105,63 @@ type FilterSidebarProps = {
   setMin: (min: number) => void;
   setMax: (max: number) => void;
 };
+type PaginationProps = {
+  totalPages: number;
+  handlePageChange: (page: number) => void;
+  currentPage: number;
+};
+// Define types for nested fields
+interface Attribute {
+  name: string;
+  value: string;
+}
+
+interface Variant {
+  name: string;
+  value: string;
+}
+
+// Define the main product form type
+interface ProductUpdateFormInputs {
+  title: string;
+  price: number;
+  salePrice: number;
+  description: string;
+  sku: string;
+  images: string[];
+  stock: number;
+  category: string;
+  status: "active" | "inactive" | "draft";
+  attributes: Attribute[];
+  tags: string[];
+  variants: Variant[];
+  _id: string;
+}
+type ReviewFormInputs = {
+  _id?: string;
+  user: string;
+  product: string;
+  rating?: number;
+  comment?: string;
+  date?: string;
+};
 export type {
   Address,
+  Attribute,
   CategoryFormInputs,
   CategoryTrendingProps,
   District,
   Division,
   FilterSidebarProps,
+  PaginationProps,
   Product,
   ProductFormInputs,
   ProductList,
+  ProductUpdateFormInputs,
+  ReviewFormInputs,
   SearchState,
   SignInFormValues,
   SignUpFormValues,
   User,
+  Variant,
 };

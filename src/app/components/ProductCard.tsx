@@ -28,6 +28,7 @@
 // export default ProductCard;
 import { Star } from "lucide-react"; // or any other icon library you prefer
 import Image from "next/image";
+import Link from "next/link";
 import { Product } from "../types/types";
 
 const ProductCard = ({ product }: { product: Product }) => {
@@ -86,7 +87,7 @@ const ProductCard = ({ product }: { product: Product }) => {
             (24 reviews)
           </span>
         </div>
-
+        <Link href={`shop/products/${product._id}`}>Read More</Link>
         {/* Add to Cart Button - Hidden until hover */}
         <button className="mt-3 w-full rounded-md bg-blue-600 py-2 text-sm font-medium text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100 hover:bg-blue-700">
           Add to Cart

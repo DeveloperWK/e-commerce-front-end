@@ -2,20 +2,6 @@
 import ProductsGrid from "@/app/components/productsGrid";
 import WithNavbarLayout from "@/app/with-navbar";
 import { Suspense } from "react";
-
-// const ShopPage = () => {
-//   return (
-//     <WithNavbarLayout>
-//       <section className="h-full grid grid-cols-1 md:grid-cols-[auto_1fr] p-4 gap-4">
-//         <section className="w-64 sticky top-4 h-fit">
-//           <FilterSidebar />
-//         </section>
-//         <ProductsGrid />
-//       </section>
-//     </WithNavbarLayout>
-//   );
-// };
-
 const Shop = () => {
   return (
     <WithNavbarLayout>

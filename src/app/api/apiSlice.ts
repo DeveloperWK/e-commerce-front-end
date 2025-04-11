@@ -2,6 +2,7 @@ import {
   CategoryFormInputs,
   ProductFormInputs,
   ProductList,
+  ReviewFormInputs,
   SignInFormValues,
   SignUpFormValues,
 } from "@/app/types/types";
@@ -15,6 +16,7 @@ export const apiSlice = createApi({
 
     prepareHeaders: (headers) => {
       const token = getLocalStorage("token");
+      headers.set("Content-Type", "application/json");
       if (token) {
         headers.set("Authorization", `Bearer ${token}`);
       }
@@ -42,9 +44,7 @@ export const apiSlice = createApi({
         url: "/products",
         params: { page, category, limit, min, max },
       }),
-
       transformResponse: (response: ProductList) => response || [],
-
       providesTags: (result) =>
         result
           ? [
@@ -137,6 +137,36 @@ export const apiSlice = createApi({
         { type: "Product", id: "LIST" },
       ],
     }),
+    updateProduct: builder.mutation({
+      query: (data: ProductFormInputs) => ({
+        url: `/products/${data._id}`,
+        method: "PATCH",
+        body: data,
+      }),
+    }),
+    getProductById: builder.query({
+      query: (id: string) => ({
+        url: `/products/${id}`,
+      }),
+      // providesTags: (result) =>
+      //   result
+      //     ? [
+      //         { type: "Product" as const, id: result._id },
+      //         { type: "Product" as const, id: "LIST" },
+      //       ]
+      //     : [{ type: "Product" as const, id: "LIST" }],
+    }),
+    createReview: builder.mutation({
+      query: (data: ReviewFormInputs) => ({
+        url: "/reviews",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: (result, error, arg) => [
+        { type: "Product", id: arg._id },
+        { type: "Product", id: "LIST" },
+      ],
+    }),
   }),
 });
 
@@ -153,4 +183,7 @@ export const {
   useLazyGetProductsQuery,
   useDeleteProductMutation,
   useProductsQuery,
+  useGetProductByIdQuery,
+  useUpdateProductMutation,
+  useCreateReviewMutation,
 } = apiSlice;

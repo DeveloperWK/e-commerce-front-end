@@ -1,20 +1,21 @@
 import { Pencil, Trash2 } from "lucide-react";
+import Link from "next/link";
 interface actionType {
-  onEdit?: () => void;
+  id: string;
   onDelete: () => void;
+  onEdit?: () => void;
 }
-const ActionButtons = ({ onEdit, onDelete }: actionType) => {
+const ActionButtons = ({ onDelete, id }: actionType) => {
   return (
     <div className="flex space-x-2">
       {/* Edit Button */}
-      <button
-        onClick={onEdit}
+      <Link
+        href={`/admin/update-products/${id}`}
         className="flex items-center justify-center px-3 py-2 text-sm font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
       >
         <Pencil className="w-4 h-4 mr-2" /> {/* Lucide Edit Icon */}
         Edit
-      </button>
-
+      </Link>
       {/* Delete Button */}
       <button
         onClick={onDelete}

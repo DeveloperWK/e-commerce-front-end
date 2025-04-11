@@ -4,14 +4,13 @@ import {
   useGetCategoriesQuery,
 } from "@/app/api/apiSlice";
 import { CategoryFormInputs, ProductFormInputs } from "@/app/types/types";
+import generateSKU from "@/app/utility/generateSKU";
 import React from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
 const CreateProductForm: React.FC = () => {
   const [createProduct, { isLoading, isSuccess }] = useCreateProductMutation();
-  // const { refetch } = useGetProductsQuery({});
-  // const [getProducts] = useLazyGetProductsQuery();
   const { data: categories } = useGetCategoriesQuery({});
   console.log("Categories:", categories);
 
@@ -51,7 +50,14 @@ const CreateProductForm: React.FC = () => {
   });
 
   const onSubmit = (data: ProductFormInputs) => {
-    createProduct(data);
+    createProduct({
+      ...data,
+      sku: generateSKU(data.title, data.variants),
+    });
+    console.log({
+      ...data,
+      sku: generateSKU(data.title, data.variants),
+    });
     // refetch();
     console.log("Product Data:", data);
   };
@@ -98,7 +104,7 @@ const CreateProductForm: React.FC = () => {
       </div>
 
       {/* SKU */}
-      <div className="mb-4">
+      {/* <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
           SKU <span className="text-red-500">*</span>
         </label>
@@ -112,7 +118,7 @@ const CreateProductForm: React.FC = () => {
             {errors.sku.message}
           </p>
         )}
-      </div>
+      </div> */}
       {/* Slug */}
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">

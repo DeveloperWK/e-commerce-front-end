@@ -21,6 +21,7 @@ const ProductTable = ({ products }: { products: Product[] }) => {
       console.error(error);
     }
   };
+
   return (
     <section className="bg-white dark:bg-gray-800 rounded-lg shadow">
       <div className="overflow-x-auto p-1">
@@ -33,7 +34,7 @@ const ProductTable = ({ products }: { products: Product[] }) => {
                 SKU
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Name
+                Title
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider whitespace-nowrap">
                 Price
@@ -86,7 +87,10 @@ const ProductTable = ({ products }: { products: Product[] }) => {
                 </td>
                 <td className="px-4 py-4 whitespace-nowrap text-center">
                   {/* Action buttons */}
-                  <ActionButtons onDelete={() => deleteHandler(product._id)} />
+                  <ActionButtons
+                    onDelete={() => deleteHandler(product._id)}
+                    id={product._id}
+                  />
                 </td>
               </tr>
             ))}

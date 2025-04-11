@@ -32,7 +32,7 @@ const SignInForm = () => {
   useEffect(() => {
     if (isSuccess) {
       toast.success("Login successful");
-      signInAuth(data.token, data.role);
+      signInAuth(data.token, data.role, data.userId);
       router.push("/");
     }
     if (isError) {

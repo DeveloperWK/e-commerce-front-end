@@ -14,10 +14,11 @@ export const useAuth = () => {
     const handleStorageChange = () => {
       const token = localStorage.getItem("token");
       const role = localStorage.getItem("role");
-      if (!token || !role) {
+      const userId = localStorage.getItem("userId");
+      if (!token || !role || !userId) {
         dispatch(signOut());
       } else {
-        dispatch(signIn({ token, role: role || "" }));
+        dispatch(signIn({ token, role: role || "", userId }));
       }
     };
     window.addEventListener("storage", handleStorageChange);
@@ -25,8 +26,8 @@ export const useAuth = () => {
       window.removeEventListener("storage", handleStorageChange);
     };
   }, [dispatch]);
-  const handleLogin = (token: string, role: string) => {
-    dispatch(signIn({ token, role }));
+  const handleLogin = (token: string, role: string, userId: string) => {
+    dispatch(signIn({ token, role, userId }));
   };
   const handleLogout = () => {
     dispatch(signOut());
