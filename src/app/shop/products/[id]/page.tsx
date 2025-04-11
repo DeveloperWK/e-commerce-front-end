@@ -1,21 +1,19 @@
 "use client";
-import { useGetProductByIdQuery } from "@/app/api/apiSlice";
+import {
+  useCreateCartMutation,
+  useGetProductByIdQuery,
+  useGetProductReviewsQuery,
+} from "@/app/api/apiSlice";
 import CommentSection from "@/app/components/CommentSection";
 import ReviewForm from "@/app/components/ReviewForm";
 import ReviewList from "@/app/components/ReviewList";
+import { getLocalStorage } from "@/app/utility/storageUtils";
 import { StarIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
-
-interface Review {
-  id: string;
-  userName: string;
-  rating: number;
-  comment: string;
-  date: string;
-}
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { Reviews } from "@/app/types/types";
 
 function ProductPage() {
   const [selectedImage, setSelectedImage] = useState<string>("");
@@ -23,10 +21,13 @@ function ProductPage() {
   const [selectedVariants, setSelectedVariants] = useState<
     Record<string, string>
   >({});
-  const [reviews, setReviews] = useState<Review[]>([]);
+  // const [reviews, setReviews] = useState<Review[]>([]);
 
   const { id } = useParams();
   const { data, isLoading } = useGetProductByIdQuery(id as string);
+  const { data: reviews } = useGetProductReviewsQuery(id as string);
+  console.log(reviews);
+  const [createCart] = useCreateCartMutation();
   // Group variants by name
 
   // Memoize the computation of variantGroups to avoid recalculating on every render
@@ -35,7 +36,7 @@ function ProductPage() {
       ? data.product.variants.reduce(
           (
             acc: Record<string, string[]>,
-            variant: { name: string; value: string }
+            variant: { name: string; value: string },
           ) => {
             if (!acc[variant.name]) {
               acc[variant.name] = [];
@@ -43,7 +44,7 @@ function ProductPage() {
             acc[variant.name].push(variant.value);
             return acc;
           },
-          {} as Record<string, string[]>
+          {} as Record<string, string[]>,
         )
       : {};
   }, [data?.product?.variants]);
@@ -68,6 +69,7 @@ function ProductPage() {
       setSelectedVariants({}); // Reset to empty if no variants exist
     }
   }, [data, variantGroups]);
+  /*
   const handleAddReview = (newReview: Omit<Review, "id" | "date">) => {
     const review = {
       ...newReview,
@@ -77,7 +79,7 @@ function ProductPage() {
     setReviews([...reviews, review]);
     console.log(reviews);
   };
-
+*/
   const handleQuantityChange = (value: number) => {
     if (value >= 1 && value <= data?.product?.stock) {
       setQuantity(value);
@@ -99,11 +101,21 @@ function ProductPage() {
     //   selectedVariants,
     // });
     // Show notification or redirect to cart
+    const userId = getLocalStorage("userId");
+    console.log(userId);
+    createCart({
+      userId: userId as string,
+      productId: id as string,
+      quantity,
+    });
   };
 
   const averageRating =
-    reviews.length > 0
-      ? reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length
+    reviews?.reviews?.length > 0
+      ? reviews?.reviews?.reduce(
+          (acc: number, review: Reviews) => acc + review.rating,
+          0,
+        ) / reviews?.reviews.length
       : 0;
   if (isLoading) return <div>Loading...</div>;
   return (
@@ -194,7 +206,7 @@ function ProductPage() {
                   />
                 ))}
                 <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
-                  ({reviews.length} reviews)
+                  ({reviews?.reviews?.length} reviews)
                 </span>
               </div>
               <span className="text-sm text-gray-500 dark:text-gray-400">
@@ -213,7 +225,7 @@ function ProductPage() {
                   <span className="text-green-600 text-sm font-medium dark:text-green-400">
                     {Math.round(
                       (1 - data?.product?.salePrice / data?.product?.price) *
-                        100
+                        100,
                     )}
                     % OFF
                   </span>
@@ -280,7 +292,7 @@ function ProductPage() {
                     {data?.product?.attributes.map(
                       (
                         attr: { name: string; value: string },
-                        index: number
+                        index: number,
                       ) => (
                         <div
                           key={index}
@@ -297,7 +309,7 @@ function ProductPage() {
                             {attr.value}
                           </span>
                         </div>
-                      )
+                      ),
                     )}
                   </div>
                 </div>
@@ -365,7 +377,15 @@ function ProductPage() {
           <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">
             Customer Reviews
           </h2>
-          <ReviewList reviews={reviews} />
+          <Suspense
+            fallback={
+              <>
+                <p>Loading...</p>
+              </>
+            }
+          >
+            <ReviewList reviews={reviews.reviews} />
+          </Suspense>
           <ReviewForm productId={id as string} />
         </div>
         {/* Comment Section */}

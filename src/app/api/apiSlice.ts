@@ -1,4 +1,5 @@
 import {
+  Carts,
   CategoryFormInputs,
   ProductFormInputs,
   ProductList,
@@ -167,6 +168,18 @@ export const apiSlice = createApi({
         { type: "Product", id: "LIST" },
       ],
     }),
+    createCart: builder.mutation({
+      query: (data: Carts) => ({
+        url: "/carts",
+        method: "POST",
+        body: data,
+      }),
+    }),
+    getProductReviews: builder.query({
+      query: (productId: string) => ({
+        url: `/reviews/products/${productId}`,
+      }),
+    }),
   }),
 });
 
@@ -186,4 +199,6 @@ export const {
   useGetProductByIdQuery,
   useUpdateProductMutation,
   useCreateReviewMutation,
+  useCreateCartMutation,
+  useGetProductReviewsQuery,
 } = apiSlice;

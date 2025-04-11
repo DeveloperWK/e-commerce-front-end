@@ -145,6 +145,18 @@ type ReviewFormInputs = {
   comment?: string;
   date?: string;
 };
+type Carts = {
+  userId: string;
+  productId: string;
+  quantity?: number;
+};
+type Reviews = {
+  _id: string;
+  userName: string;
+  rating: number;
+  comment: string;
+  date: string;
+};
 export type {
   Address,
   Attribute,
@@ -164,4 +176,6 @@ export type {
   SignUpFormValues,
   User,
   Variant,
+  Carts,
+  Reviews,
 };
