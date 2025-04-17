@@ -6,14 +6,6 @@ import {
 import { CategoryFormInputs } from "@/app/types/types";
 import React from "react";
 import { useForm } from "react-hook-form";
-
-// Mock data for parent categories (replace this with your actual API call)
-const mockParentCategories = [
-  { id: "1", name: "Electronics" },
-  { id: "2", name: "Clothing" },
-  { id: "3", name: "Home & Kitchen" },
-];
-
 const CreateCategoryForm: React.FC = () => {
   const {
     register,
@@ -22,14 +14,10 @@ const CreateCategoryForm: React.FC = () => {
   } = useForm<CategoryFormInputs>();
   const [createCategory, { isLoading }] = useCreateCategoryMutation();
   const { refetch } = useGetCategoriesQuery({});
-  // Handle form submission
   const onSubmit = (data: CategoryFormInputs) => {
-    console.log("Category Data:", data);
     createCategory(data);
     refetch();
-    // Send the data to your backend API here
   };
-
   return (
     <section className="flex items-center justify-center min-h-screen ">
       <div className="max-w-md mx-auto p-6 bg-white dark:bg-gray-900 shadow-lg rounded-md ">

@@ -8,12 +8,10 @@ import generateSKU from "@/app/utility/generateSKU";
 import React from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-
 const CreateProductForm: React.FC = () => {
   const [createProduct, { isLoading, isSuccess }] = useCreateProductMutation();
   const { data: categories } = useGetCategoriesQuery({});
   console.log("Categories:", categories);
-
   const {
     register,
     handleSubmit,
@@ -102,23 +100,6 @@ const CreateProductForm: React.FC = () => {
           </p>
         )}
       </div>
-
-      {/* SKU */}
-      {/* <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          SKU <span className="text-red-500">*</span>
-        </label>
-        <input
-          type="text"
-          {...register("sku", { required: "SKU is required" })}
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-        />
-        {errors.sku && (
-          <p className="text-red-500 dark:text-red-400 text-xs mt-1">
-            {errors.sku.message}
-          </p>
-        )}
-      </div> */}
       {/* Slug */}
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -230,7 +211,7 @@ const CreateProductForm: React.FC = () => {
                     type="button"
                     onClick={() => {
                       const newImages = field.value.filter(
-                        (_, i) => i !== index
+                        (_, i) => i !== index,
                       );
                       field.onChange(newImages);
                     }}

@@ -1,62 +1,18 @@
 "use client";
-import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import CartItem from "../components/CartItem";
 import EmptyCart from "../components/EmptyCart";
 import SummaryCard from "../components/SummaryCard";
-import { CartItemType, CartSummary } from "@/app/types/types";
-import {
-  useLazyGetCartQuery,
-  useRemoveCartItemMutation,
-} from "../api/apiSlice";
-import { getLocalStorage } from "../utility/storageUtils";
+import useCartLogic from "@/app/hooks/useCartLogic";
 const CartPage: React.FC = () => {
-  const [cartItems, setCartItems] = useState<CartItemType[]>([]);
-  const [getCart, { isLoading }] = useLazyGetCartQuery({});
-  const [removeCartItem, { isLoading: removeCartLoading }] =
-    useRemoveCartItemMutation();
-  useEffect(() => {
-    const fetchCart = async () => {
-      const res = await getCart({});
-      if (res.data) {
-        setCartItems(res.data?.cart?.items);
-      } else {
-        console.error("Failed to fetch cart:", res.error);
-      }
-    };
-    fetchCart();
-  }, []);
-  console.log("cartLength", cartItems.length);
-  const subtotal = cartItems?.reduce(
-    (sum: number, item) => sum + item?.product?.price * item.quantity,
-    0,
-  );
-  const shipping = subtotal > 100 ? 0 : 10;
-  const tax = subtotal * 0.1;
-  const total = subtotal + shipping + tax;
-
-  const summary: CartSummary = {
-    subtotal,
-    shipping,
-    tax,
-    total,
-  };
-
-  const handleQuantityChange = (id: string, quantity: number) => {
-    setCartItems(
-      cartItems.map((item) =>
-        item.product._id === id ? { ...item, quantity } : item,
-      ),
-    );
-  };
-
-  const handleRemove = (id: string) => {
-    removeCartItem({
-      productId: id,
-      userId: getLocalStorage("userId") as string,
-    });
-    setCartItems(cartItems.filter((item) => item?.product?._id !== id));
-  };
+  const {
+    cartItems,
+    isLoading,
+    removeCartLoading,
+    summary,
+    handleRemove,
+    handleQuantityChange,
+  } = useCartLogic();
   if (isLoading)
     return (
       <>
@@ -97,7 +53,7 @@ const CartPage: React.FC = () => {
                     exit={{ opacity: 0 }}
                   >
                     <AnimatePresence>
-                      {cartItems.map((item) => (
+                      {cartItems?.map((item) => (
                         <motion.li key={item._id} layout className="py-6">
                           <CartItem
                             item={item}

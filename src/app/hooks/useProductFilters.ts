@@ -28,9 +28,7 @@ const useProductFilters = () => {
     (state: RootState) => state.hasSearched.hasSearched,
   );
   const debounceMin = useDebounce(min, 500);
-  console.log("debounceMin", debounceMin);
   const debounceMax = useDebounce(max, 500);
-  console.log("debounceMax", debounceMax);
   const { data: productsData, isLoading } = useGetProductsQuery({
     page: currentPage.toString(),
     ...(selectedCategory && { category: selectedCategory }),
@@ -67,7 +65,15 @@ const useProductFilters = () => {
     if (min !== 0) params.set("min", min.toString());
     if (max !== 1000) params.set("max", max.toString());
     router.push(`?${params.toString()}`);
-  }, [selectedCategory, debounceMin, debounceMax, currentPage]);
+  }, [
+    selectedCategory,
+    debounceMin,
+    debounceMax,
+    currentPage,
+    min,
+    max,
+    router,
+  ]);
 
   const handlePageChange = (page: number) => {
     if (page < 1 || page > totalPages) return;
