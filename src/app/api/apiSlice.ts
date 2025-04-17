@@ -1,6 +1,7 @@
 import {
   Carts,
   CategoryFormInputs,
+  createProductReviews,
   ProductFormInputs,
   ProductList,
   ReviewFormInputs,
@@ -24,7 +25,7 @@ export const apiSlice = createApi({
       return headers;
     },
   }),
-  tagTypes: ["Product", "Category"],
+  tagTypes: ["Product", "Category", "comments", "Reviews"],
   keepUnusedDataFor: 30,
   refetchOnMountOrArgChange: true,
   endpoints: (builder) => ({
@@ -157,17 +158,7 @@ export const apiSlice = createApi({
       //       ]
       //     : [{ type: "Product" as const, id: "LIST" }],
     }),
-    createReview: builder.mutation({
-      query: (data: ReviewFormInputs) => ({
-        url: "/reviews",
-        method: "POST",
-        body: data,
-      }),
-      invalidatesTags: (result, error, arg) => [
-        { type: "Product", id: arg._id },
-        { type: "Product", id: "LIST" },
-      ],
-    }),
+
     createCart: builder.mutation({
       query: (data: Carts) => ({
         url: "/carts",
@@ -175,9 +166,38 @@ export const apiSlice = createApi({
         body: data,
       }),
     }),
+    getCart: builder.query({
+      query: () => ({
+        url: `/carts/${getLocalStorage("userId")}`,
+      }),
+    }),
+    removeCartItem: builder.mutation({
+      query: (data: { userId: string; productId: string }) => ({
+        url: "/carts/remove",
+        method: "POST",
+        body: data,
+      }),
+    }),
     getProductReviews: builder.query({
       query: (productId: string) => ({
         url: `/reviews/products/${productId}`,
+      }),
+      providesTags: ["Reviews"],
+    }),
+    createReview: builder.mutation({
+      query: (data: ReviewFormInputs) => ({
+        url: "/reviews",
+        method: "POST",
+        body: data,
+      }),
+      // invalidatesTags: [{ type: "Reviews", id: "LIST" }],
+      invalidatesTags: ["Reviews"],
+    }),
+    createProductReviews: builder.mutation({
+      query: (data: createProductReviews) => ({
+        url: "/reviews",
+        method: "POST",
+        body: data,
       }),
     }),
   }),
@@ -201,4 +221,7 @@ export const {
   useCreateReviewMutation,
   useCreateCartMutation,
   useGetProductReviewsQuery,
+  useLazyGetCartQuery,
+  useRemoveCartItemMutation,
+  useCreateProductReviewsMutation,
 } = apiSlice;

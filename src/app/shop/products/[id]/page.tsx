@@ -14,6 +14,8 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { Reviews } from "@/app/types/types";
+import { useDispatch } from "react-redux";
+import { setCartCounter } from "@/app/features/cart-counter/cart-counter";
 
 function ProductPage() {
   const [selectedImage, setSelectedImage] = useState<string>("");
@@ -27,7 +29,9 @@ function ProductPage() {
   const { data, isLoading } = useGetProductByIdQuery(id as string);
   const { data: reviews } = useGetProductReviewsQuery(id as string);
   console.log(reviews);
-  const [createCart] = useCreateCartMutation();
+  const [createCart, { isSuccess }] = useCreateCartMutation();
+  const dispatch = useDispatch();
+
   // Group variants by name
 
   // Memoize the computation of variantGroups to avoid recalculating on every render
@@ -69,17 +73,6 @@ function ProductPage() {
       setSelectedVariants({}); // Reset to empty if no variants exist
     }
   }, [data, variantGroups]);
-  /*
-  const handleAddReview = (newReview: Omit<Review, "id" | "date">) => {
-    const review = {
-      ...newReview,
-      id: data?.product?._id.toString(),
-      date: new Date().toISOString().split("T")[0],
-    };
-    setReviews([...reviews, review]);
-    console.log(reviews);
-  };
-*/
   const handleQuantityChange = (value: number) => {
     if (value >= 1 && value <= data?.product?.stock) {
       setQuantity(value);
@@ -93,21 +86,21 @@ function ProductPage() {
     });
   };
 
-  const handleAddToCart = () => {
-    // Implementation would depend on your cart management
-    // console.log("Adding to cart:", {
-    //   product,
-    //   quantity,
-    //   selectedVariants,
-    // });
-    // Show notification or redirect to cart
-    const userId = getLocalStorage("userId");
-    console.log(userId);
-    createCart({
-      userId: userId as string,
-      productId: id as string,
-      quantity,
-    });
+  const handleAddToCart = async () => {
+    try {
+      const userId = getLocalStorage("userId");
+      const result = await createCart({
+        userId: userId as string,
+        productId: id as string,
+        quantity,
+        variants: selectedVariants,
+      });
+      const data = await result.data;
+      dispatch(setCartCounter(data?.cart?.items?.length || 0));
+      console.log("result");
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const averageRating =
@@ -353,6 +346,11 @@ function ProductPage() {
               >
                 {data?.product?.stock > 0 ? "Add to Cart" : "Out of Stock"}
               </button>
+              {isSuccess && (
+                <>
+                  <p>Add To Cart Successful</p>
+                </>
+              )}
             </div>
             {/* Tags */}
             {data?.product?.tags && data?.product?.tags.length > 0 && (
@@ -384,7 +382,7 @@ function ProductPage() {
               </>
             }
           >
-            <ReviewList reviews={reviews.reviews} />
+            <ReviewList reviews={reviews?.reviews} />
           </Suspense>
           <ReviewForm productId={id as string} />
         </div>
@@ -401,56 +399,3 @@ function ProductPage() {
 }
 
 export default ProductPage;
-// {
-//   /* Related Products */
-// }
-// {
-//   /* {relatedProducts && relatedProducts.length > 0 && (
-//       <div>
-//         <h2 className="text-2xl font-bold mb-6">Related Products</h2>
-//         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-//           {relatedProducts.map((relatedProduct) => (
-//             <Link
-//               key={relatedProduct._id.toString()}
-//               href={`/products/${relatedProduct.slug}`}
-//               className="group"
-//             >
-//               <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-//                 <div className="relative h-52 w-full">
-//                   {relatedProduct.images && relatedProduct.images[0] && (
-//                     <Image
-//                       src={relatedProduct.images[0]}
-//                       alt={relatedProduct.title}
-//                       fill
-//                       className="object-cover group-hover:scale-105 transition-transform duration-300"
-//                     />
-//                   )}
-//                 </div>
-//                 <div className="p-4">
-//                   <h3 className="text-lg font-medium text-gray-900 group-hover:text-blue-600">
-//                     {relatedProduct.title}
-//                   </h3>
-//                   <div className="mt-2">
-//                     {relatedProduct.salePrice ? (
-//                       <div className="flex items-center gap-2">
-//                         <span className="font-bold text-gray-900">
-//                           ${relatedProduct.salePrice.toFixed(2)}
-//                         </span>
-//                         <span className="text-sm text-gray-500 line-through">
-//                           ${relatedProduct.price.toFixed(2)}
-//                         </span>
-//                       </div>
-//                     ) : (
-//                       <span className="font-bold text-gray-900">
-//                         ${relatedProduct.price.toFixed(2)}
-//                       </span>
-//                     )}
-//                   </div>
-//                 </div>
-//               </div>
-//             </Link>
-//           ))}
-//         </div>
-//       </div>
-//     )} */
-// }

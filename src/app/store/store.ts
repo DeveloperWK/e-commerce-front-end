@@ -16,6 +16,7 @@ import {
   REHYDRATE,
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import { cartCounterReducer } from "../features/cart-counter/cart-counter";
 type ApiState = ReturnType<typeof apiSlice.reducer> & {
   [apiSlice.reducerPath]?: Omit<
     ApiState,
@@ -50,6 +51,7 @@ const rootReducer = combineReducers({
   auth: authReducer,
   hasSearched: hasSearchedReducer,
   searchResults: searchResultsReducer,
+  cartCounter: cartCounterReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

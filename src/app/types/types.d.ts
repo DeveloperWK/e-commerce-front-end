@@ -98,7 +98,6 @@ type CategoryTrendingProps = {
 };
 type FilterSidebarProps = {
   handleCategoryChange: (category: string) => void;
-  handlePriceChange: () => void;
   selectedCategory: string;
   min: number;
   max: number;
@@ -149,6 +148,7 @@ type Carts = {
   userId: string;
   productId: string;
   quantity?: number;
+  variants?: Record<string, string>;
 };
 type Reviews = {
   _id: string;
@@ -156,6 +156,24 @@ type Reviews = {
   rating: number;
   comment: string;
   date: string;
+};
+
+interface CartSummary {
+  subtotal: number;
+  shipping: number;
+  tax: number;
+  total: number;
+}
+type CartItemType = {
+  product: Product;
+  quantity: number;
+  _id: string;
+};
+type createProductReviews = {
+  user: string;
+  product: string;
+  rating: number;
+  comment: string;
 };
 export type {
   Address,
@@ -178,4 +196,7 @@ export type {
   Variant,
   Carts,
   Reviews,
+  CartSummary,
+  CartItemType,
+  createProductReviews,
 };

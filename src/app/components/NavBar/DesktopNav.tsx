@@ -83,13 +83,6 @@ const DesktopNav = ({
               <Store size={20} className="text-gray-600" />
               <span>Store</span>
             </Link>
-            <Link
-              href="/products"
-              className="flex items-center space-x-1 text-sm font-medium text-gray-700 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md px-3 py-2"
-            >
-              <Store size={20} className="text-gray-600" />
-              <span>Products</span>
-            </Link>
             {/* Sign-Up */}
             <Link
               href="/sign-up"
