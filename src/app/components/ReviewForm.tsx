@@ -44,9 +44,6 @@ export default function ReviewForm({ productId }: { productId: string }) {
         rating,
         comment,
       });
-      // console.log("Review submitted:", {
-      //   user: getLocalStorage("userId") as string,
-      //   product: productId,
       //   rating,
       //   comment,
       // });

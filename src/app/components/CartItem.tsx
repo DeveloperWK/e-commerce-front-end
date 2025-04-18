@@ -15,7 +15,6 @@ const CartItem: React.FC<CartItemProps> = ({
   onRemove,
   disabled,
 }) => {
-  console.log("item", item);
   return (
     <motion.div
       initial={{ opacity: 1, height: "auto" }}

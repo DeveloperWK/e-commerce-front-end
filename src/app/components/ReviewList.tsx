@@ -2,7 +2,6 @@ import { Reviews } from "@/app/types/types";
 import { StarIcon } from "lucide-react";
 
 export default function ReviewList({ reviews }: { reviews: Reviews[] }) {
-  console.log("Revieew", reviews);
   if (reviews?.length === 0) {
     return (
       <div className="bg-gray-50 p-6 rounded-lg border border-gray-200 text-center">

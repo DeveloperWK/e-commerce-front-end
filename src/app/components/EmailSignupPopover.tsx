@@ -18,7 +18,6 @@ export default function EmailSignupPopover() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Submitted email:", email);
     handleClose();
   };
 

@@ -30,7 +30,6 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
         }
       });
       router.push(`?${params.toString()}`);
-      console.log("Updated query params:", params.toString());
     },
     [router, searchParams],
   );

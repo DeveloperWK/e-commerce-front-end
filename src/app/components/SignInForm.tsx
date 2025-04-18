@@ -19,7 +19,6 @@ const SignInForm = ({
   const [signIn, { isLoading, error, isError, data, isSuccess }] =
     useSignInMutation();
   const { signIn: signInAuth } = useAuth();
-  console.log("successLink", successLink);
   const router = useRouter();
   const {
     register,
