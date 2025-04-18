@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { useSignInMutation } from "../api/apiSlice";
 import { useAuth } from "../hooks/useAuth";
+import { getLocalStorage } from "../utility/storageUtils";
 
 const SignInForm = () => {
   const [signIn, { isLoading, error, isError, data, isSuccess }] =
@@ -33,6 +34,7 @@ const SignInForm = () => {
     if (isSuccess) {
       toast.success("Login successful");
       signInAuth(data.token, data.role, data.userId);
+      document.cookie = `role=${getLocalStorage("role")}; path=/;`;
       router.push("/");
     }
     if (isError) {

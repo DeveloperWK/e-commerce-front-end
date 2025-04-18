@@ -17,7 +17,7 @@ export const authSlice = createSlice({
   reducers: {
     signIn: (
       state,
-      action: PayloadAction<{ token: string; role: string; userId: string }>
+      action: PayloadAction<{ token: string; role: string; userId: string }>,
     ) => {
       const { token, role, userId } = action.payload;
       setLocalStorage("token", token);
@@ -30,6 +30,7 @@ export const authSlice = createSlice({
       removeLocalStorage("token");
       removeLocalStorage("role");
       removeLocalStorage("userId");
+      document.cookie = "role=; path=/";
       state.isAuthenticated = false;
       state.role = undefined;
     },

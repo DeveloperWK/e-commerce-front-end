@@ -27,7 +27,10 @@ const Navbar: React.FC = () => {
 
     search(searchQuery);
   };
-
+  const signOutHandler = () => {
+    document.cookie = "role=; path=/";
+    signOut();
+  };
   useEffect(() => {
     // This effect will run whenever the data from the search query changes
     if (data) {
@@ -54,7 +57,7 @@ const Navbar: React.FC = () => {
           setSearchQuery={setSearchQuery}
           cartCount={cartCount}
           isLoggedIn={isAuthenticated}
-          signOut={signOut}
+          signOut={signOutHandler}
         />
       </section>
       <section className="md:hidden lg:hidden">

@@ -27,6 +27,11 @@ type Address = {
   isDefault: boolean;
   fullAddress: string;
 };
+type category = {
+  _id: string;
+  name: string;
+  parent?: string | null;
+};
 type Product = {
   _id: string;
   title: string;
@@ -35,10 +40,7 @@ type Product = {
   price: number;
   salePrice: number;
   stock: number;
-  category: {
-    _id: string;
-    name: string;
-  };
+  category: category;
   images: string[];
   slug: string;
   attributes: { name: string; value: string }[];
@@ -199,4 +201,5 @@ export type {
   CartSummary,
   CartItemType,
   createProductReviews,
+  category,
 };

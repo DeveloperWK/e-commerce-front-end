@@ -3,7 +3,7 @@ import {
   useCreateCategoryMutation,
   useGetCategoriesQuery,
 } from "@/app/api/apiSlice";
-import { CategoryFormInputs } from "@/app/types/types";
+import { category, CategoryFormInputs } from "@/app/types/types";
 import React from "react";
 import { useForm } from "react-hook-form";
 const CreateCategoryForm: React.FC = () => {
@@ -13,7 +13,7 @@ const CreateCategoryForm: React.FC = () => {
     formState: { errors },
   } = useForm<CategoryFormInputs>();
   const [createCategory, { isLoading }] = useCreateCategoryMutation();
-  const { refetch } = useGetCategoriesQuery({});
+  const { refetch, data } = useGetCategoriesQuery({});
   const onSubmit = (data: CategoryFormInputs) => {
     createCategory(data);
     refetch();
@@ -64,8 +64,8 @@ const CreateCategoryForm: React.FC = () => {
               className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             >
               <option value="">None (Top-level category)</option>
-              {mockParentCategories.map((category) => (
-                <option key={category.id} value={category.id}>
+              {data?.categories?.map((category: category) => (
+                <option key={category._id} value={category._id}>
                   {category.name}
                 </option>
               ))}
