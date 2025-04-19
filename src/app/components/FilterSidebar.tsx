@@ -1,7 +1,8 @@
 "use client";
 import { useGetCategoriesQuery } from "@/app/api/apiSlice";
+import CategoryFilter from "@/app/components/CategoryFilter";
 import { RootState, useAppSelector } from "@/app/store/store";
-import { CategoryFormInputs, FilterSidebarProps } from "@/app/types/types";
+import { FilterSidebarProps } from "@/app/types/types";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useCallback, useEffect } from "react";
 const FilterSidebar: React.FC<FilterSidebarProps> = ({
@@ -55,6 +56,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
     handleCategoryChange(category);
     setMin(isNaN(minVal) ? 0 : minVal);
     setMax(isNaN(maxVal) ? 1000 : maxVal);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -72,30 +74,12 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
       <h2 className="text-lg font-semibold mb-4">Filters</h2>
 
       {/* Category Filter */}
-      <div className="mb-6">
-        <h3 className="text-md font-medium mb-2">Category</h3>
-        <ul className="space-y-2">
-          {categories?.categories?.map((category: CategoryFormInputs) => (
-            <li key={category._id}>
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="category"
-                  value={category.name}
-                  checked={selectedCategory === category.name}
-                  onChange={() => {
-                    handleCategoryChange(category.name);
-                    updateQueryParams({ category: category.name });
-                  }}
-                  className="form-radio h-4 w-4 text-indigo-600 transition duration-150 ease-in-out"
-                />
-                <span className="ml-2">{category.name}</span>
-              </label>
-            </li>
-          ))}
-        </ul>
-      </div>
-
+      <CategoryFilter
+        categories={categories}
+        handleCategoryChange={handleCategoryChange}
+        selectedCategory={selectedCategory}
+        updateQueryParams={updateQueryParams}
+      />
       {/* Price Range Filter */}
       <div>
         <h3 className="text-md font-medium mb-2">Price Range</h3>

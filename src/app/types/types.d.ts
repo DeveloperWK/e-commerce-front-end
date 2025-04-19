@@ -177,6 +177,15 @@ type createProductReviews = {
   rating: number;
   comment: string;
 };
+type CategoryFilterProps = {
+  categories: {
+    categories: CategoryFormInputs[];
+  };
+  selectedCategory: string;
+  handleCategoryChange: (categoryName: string) => void;
+  updateQueryParams: (params: { category: string }) => void;
+};
+
 export type {
   Address,
   Attribute,
@@ -202,4 +211,5 @@ export type {
   CartItemType,
   createProductReviews,
   category,
+  CategoryFilterProps,
 };

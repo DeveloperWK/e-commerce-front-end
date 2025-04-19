@@ -1,4 +1,4 @@
-import { LogOut, Search, ShoppingCart, Store, User } from "lucide-react";
+import { LogOut, Search, ShoppingCart, Store, User, XIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -9,6 +9,7 @@ const DesktopNav = ({
   cartCount,
   isLoggedIn,
   signOut,
+  clearSearch,
 }: {
   handleSearch: (e: React.FormEvent) => void;
   searchQuery: string;
@@ -16,6 +17,7 @@ const DesktopNav = ({
   cartCount: number;
   isLoggedIn: boolean;
   signOut: () => void;
+  clearSearch: (e: React.FormEvent) => void;
 }) => {
   const path = usePathname();
   const shopPage = path === "/shop";
@@ -68,12 +70,22 @@ const DesktopNav = ({
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="py-1 pl-3 pr-10 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:border-gray-700 dark:focus:ring-gray-700 dark:focus:border-gray-700 dark:text-gray-300 dark:bg-gray-800"
                 />
-                <button
-                  type="submit"
-                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-blue-600"
-                >
-                  <Search size={16} />
-                </button>
+                {!searchQuery ? (
+                  <button
+                    type="submit"
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-blue-600"
+                  >
+                    <Search size={16} />
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    onClick={clearSearch}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-blue-600"
+                  >
+                    <XIcon size={16} />
+                  </button>
+                )}
               </form>
             )}
             <Link

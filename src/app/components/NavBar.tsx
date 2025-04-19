@@ -8,9 +8,11 @@ import { useAuth } from "@/app/hooks/useAuth";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
+import { useDebounce } from "@/app/hooks/useDebounce";
 
 const Navbar: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedQuery = useDebounce(searchQuery, 500);
   const [cartCount, setCartCount] = useState(0);
   const { isAuthenticated, signOut } = useAuth();
   const [search, { data }] = useLazySearchQuery();
@@ -20,17 +22,24 @@ const Navbar: React.FC = () => {
   );
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    dispatch(setHasSearched(true));
+    // dispatch(setHasSearched(true));
 
-    // Clear previous results before new search
-    dispatch(setSearchResults([]));
+    // // Clear previous results before new search
+    // dispatch(setSearchResults([]));
 
-    search(searchQuery);
+    // search(searchQuery);
   };
   const signOutHandler = () => {
     document.cookie = "role=; path=/";
     signOut();
   };
+  useEffect(() => {
+    if (debouncedQuery.trim()) {
+      dispatch(setHasSearched(true));
+      dispatch(setSearchResults([]));
+      search(debouncedQuery);
+    }
+  }, [debouncedQuery, dispatch, search]);
   useEffect(() => {
     // This effect will run whenever the data from the search query changes
     if (data) {
@@ -48,6 +57,12 @@ const Navbar: React.FC = () => {
   useEffect(() => {
     setCartCount(cartCounter || 0);
   }, [cartCounter]);
+  const clearSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSearchQuery("");
+    dispatch(setHasSearched(false));
+    dispatch(setSearchResults([]));
+  };
   return (
     <nav className="bg-white shadow-md sticky top-0 z-50  overflow-hidden">
       <section className="hidden md:block">
@@ -58,6 +73,7 @@ const Navbar: React.FC = () => {
           cartCount={cartCount}
           isLoggedIn={isAuthenticated}
           signOut={signOutHandler}
+          clearSearch={clearSearch}
         />
       </section>
       <section className="md:hidden lg:hidden">

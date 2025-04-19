@@ -1,6 +1,6 @@
 "use client";
 import { toggleMobileFilterVisible } from "@/app/features/mobileFilter/mobileFilterState";
-import { Filter, Home, Search, ShoppingCart, User } from "lucide-react";
+import { Filter, Home, Search, ShoppingCart, Store, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useDispatch } from "react-redux";
@@ -50,7 +50,16 @@ const MobileNav = ({
             <span className="text-xs text-gray-600 dark:text-white">Home</span>
           </div>
         </Link>
-
+        {/* Store Link */}
+        <Link href="/shop" aria-label="Store">
+          <div className="flex flex-col items-center space-y-1">
+            <Store
+              size={24}
+              className="text-gray-600 dark:text-white hover:text-blue-600 transition-colors duration-200"
+            />
+            <span className="text-xs text-gray-600 dark:text-white">Store</span>
+          </div>
+        </Link>
         {/* Cart Link */}
         <Link href="/cart" aria-label="Cart">
           <div className="flex flex-col items-center space-y-1">
