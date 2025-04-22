@@ -9,6 +9,7 @@ import {
 import { setCartCounter } from "@/app/features/cart-counter/cart-counter";
 import { Reviews } from "@/app/types/types";
 import { getLocalStorage } from "@/app/utility/storageUtils";
+import {useAuth} from "@/app/hooks/useAuth";
 
 const useProductPage = () => {
   const [selectedImage, setSelectedImage] = useState<string>("");
@@ -20,7 +21,8 @@ const useProductPage = () => {
   const { id } = useParams();
   const { data, isLoading } = useGetProductByIdQuery(id as string);
   const { data: reviews } = useGetProductReviewsQuery(id as string);
-  console.log(reviews);
+  const {isAuthenticated} = useAuth()
+
   const [createCart, { isSuccess }] = useCreateCartMutation();
   const dispatch = useDispatch();
 
@@ -119,6 +121,7 @@ const useProductPage = () => {
     variantGroups,
     reviews,
     id,
+    isAuthenticated
   };
 };
 export default useProductPage;

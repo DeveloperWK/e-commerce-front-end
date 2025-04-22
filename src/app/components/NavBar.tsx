@@ -20,15 +20,6 @@ const Navbar: React.FC = () => {
   const cartCounter = useSelector(
     (state: RootState) => state.cartCounter.cartCounter,
   );
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    // dispatch(setHasSearched(true));
-
-    // // Clear previous results before new search
-    // dispatch(setSearchResults([]));
-
-    // search(searchQuery);
-  };
   const signOutHandler = () => {
     document.cookie = "role=; path=/";
     signOut();
@@ -67,7 +58,6 @@ const Navbar: React.FC = () => {
     <nav className="bg-white shadow-md sticky top-0 z-50  overflow-hidden">
       <section className="hidden md:block">
         <DesktopNav
-          handleSearch={handleSearch}
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           cartCount={cartCount}
@@ -78,9 +68,10 @@ const Navbar: React.FC = () => {
       </section>
       <section className="md:hidden lg:hidden">
         <MobileNav
-          handleSearch={handleSearch}
           searchQuery={searchQuery}
+          cartCount={cartCount}
           setSearchQuery={setSearchQuery}
+          clearSearch={clearSearch}
         />
       </section>
     </nav>

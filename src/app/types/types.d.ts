@@ -185,7 +185,14 @@ type CategoryFilterProps = {
   handleCategoryChange: (categoryName: string) => void;
   updateQueryParams: (params: { category: string }) => void;
 };
-
+type NavBarProps = {
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+  cartCount: number;
+  isLoggedIn?: boolean;
+  signOut?: () => void;
+  clearSearch: (e: React.FormEvent) => void;
+}
 export type {
   Address,
   Attribute,
@@ -212,4 +219,5 @@ export type {
   createProductReviews,
   category,
   CategoryFilterProps,
+  NavBarProps
 };

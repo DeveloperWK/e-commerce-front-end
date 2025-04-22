@@ -24,8 +24,10 @@ function ProductPage() {
     variantGroups,
     reviews,
     id,
+      isAuthenticated
   } = useProductPage();
   if (isLoading) return <div>Loading...</div>;
+
   return (
     <div className="bg-gray-50 dark:bg-gray-900">
       <div className="container mx-auto px-4 py-8">
@@ -256,7 +258,7 @@ function ProductPage() {
               </div>
               <button
                 onClick={handleAddToCart}
-                disabled={data?.product?.stock <= 0}
+                disabled={data?.product?.stock <= 0 || !isAuthenticated}
                 className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white py-2 px-6 rounded-md font-medium dark:bg-blue-700 dark:hover:bg-blue-800"
               >
                 {data?.product?.stock > 0 ? "Add to Cart" : "Out of Stock"}
